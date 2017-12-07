@@ -1,0 +1,92 @@
+﻿@model TFA.Vote.Models.Project
+<style>
+    #projectdetail td {
+        padding: 6px;
+    }
+</style>
+<table width="100%" class="formtable " id="projectdetail" cellpadding="2" cellspacing="2" style="table-layout:fixed">
+    <tr>
+        <td class="tdright"><span class="text bold">项目名称:</span></td>
+        <td class="tdright" colspan="6">@Model.ProjectName</td>
+    </tr>
+    <tr>
+        <td class="tdright" rowspan="3"><span class="text bold">设计单位:</span></td>
+        <td class="tdright"><span class="text bold">单位名称:</span></td>
+        <td class="tdright" colspan="5">@Model.DesignCompany</td>
+    </tr>
+    <tr>
+        <td class="tdright"><span class="text bold">联系人:</span></td>
+        <td class="tdright">@Model.DesignContact</td>
+        <td class="tdright"><span class="text bold">电话:</span></td>
+        <td class="tdright" colspan="3">@Model.DesignPhone</td>
+    </tr>
+    <tr>
+        <td class="tdright"><span class="text bold">手机:</span></td>
+        <td class="tdright">@Model.DesignMobile</td>
+        <td class="tdright"><span class="text bold">Email:</span></td>
+        <td class="tdright" colspan="3">@Model.DesignEmail</td>
+    </tr>
+    <tr>
+        <td class="tdright"><span class="text bold">设计类别:</span></td>
+        <td class="tdright" colspan="2">@Model.DesignType</td>
+        <td class="tdright"><span class="text bold">申报奖项:</span></td>
+        <td class="tdright">@Model.ApplicationAward</td>
+        <td class="tdright"><span class="text bold">设计时间:</span></td>
+        <td class="tdright">@Model.DesignYear</td>
+    </tr>
+    <tr>
+        <td class="tdright"><span class="text bold">建设单位:</span></td>
+        <td class="tdright" colspan="6">@Model.BuildingCompany</td>
+    </tr>
+    <tr style="border-bottom:3px solid #ccc;">
+        <td class="tdright"><span class="text bold">建设地点:</span></td>
+        <td class="tdright" colspan="6">@Model.BuildingAddress</td>
+    </tr>
+
+    <tr>
+        <td class="tdright" rowspan="3"><span class="text bold">设计团队:</span></td>
+        <td class="tdright" colspan="2"><span class="text bold">设计总负责人(或分管总师):</span></td>
+        <td class="tdright" colspan="4">@Model.TeamCharger</td>
+    </tr>
+    <tr>
+        <td class="tdright" colspan="2"><span class="text bold">主创设计师:</span></td>
+        <td class="tdright" colspan="4">@Model.TeamLeader</td>
+    </tr>
+    <tr style="border-bottom:3px solid #ccc;">
+        <td class="tdright" colspan="2"><span class="text bold">设计师:</span></td>
+        <td class="tdright" colspan="4">@Model.TeamDesigner</td>
+    </tr>
+
+    <tr>
+        <td class="tdright"><span class="text bold">建筑类别:</span></td>
+        <td class="tdright" colspan="6">@Model.BuildingType</td>
+    </tr>
+    <tr style="border-bottom:3px solid #ccc;">
+        <td class="tdright"><span class="text bold">总用地面积:</span></td>
+        <td class="tdright" colspan="6">@Model.UsedArea</td>
+    </tr>
+    <tr>
+        <td class="tdright" rowspan="2"><span class="text bold">总建筑面积:</span></td>
+        <td class="tdright" rowspan="2" colspan="2">@Model.BuildingArea</td>
+        <td class="tdright" rowspan="2"><span class="text bold">其中:</span></td>
+        <td class="tdright"><span class="text bold">地上:</span></td>
+        <td class="tdright" colspan="2">@Model.BuildingAreaOverGround</td>
+    </tr>
+    <tr>
+        <td class="tdright"><span class="text bold">地下:</span></td>
+        <td class="tdright" colspan="2">@Model.BuildingAreaUnderGround</td>
+    </tr>
+    <tr>
+        <td class="tdright"><span class="text bold">建筑高度:</span></td>
+        <td class="tdright" colspan="2">@Model.BuildingHeight</td>
+        <td class="tdright"><span class="text bold">容积率:</span></td>
+        <td class="tdright" colspan="3">@Model.PlotRatio</td>
+    </tr>
+    <tr>
+        <td class="tdright"><span class="text bold">层数:</span></td>
+        <td class="tdright"><span class="text bold">地上:</span></td>
+        <td class="tdright" colspan="2">@Model.BuildingPlyOverGround</td>
+        <td class="tdright"><span class="text bold">地下:</span></td>
+        <td class="tdright" colspan="2">@Model.BuildingPlyUnderGround</td>
+    </tr>
+</table>

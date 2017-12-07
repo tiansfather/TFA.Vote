@@ -1,0 +1,35 @@
+﻿@model TFA.Vote.Models.Project
+@{
+    Layout = null;
+    ViewData["AttachMode"] = "View";
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <script src="/Resource/JS/jquery-1.7.1.min.js"></script>
+
+    <script src="/Resource/JS/global.js"></script>
+    <link href="/Resource/CSS/style.css" type="text/css" rel="stylesheet" />
+    <link href="/Resource/layui/css/layui.css" rel="stylesheet" />
+    <style>
+        .header {
+            font-weight: bold;
+            margin: 5px 0;
+        }
+
+    </style>
+</head>
+<body style="padding:15px;">
+    <div>
+        @Html.Partial("_projectdetail",Model)
+    </div>
+    <h2 class="header">附件:</h2>
+    <div>
+        @Html.Partial("_projectattach",Model,ViewData)
+    </div>
+    <script src="/Resource/layui/layui.all.js"></script>
+</body>
+</html>

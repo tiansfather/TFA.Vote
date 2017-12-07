@@ -1,0 +1,61 @@
+﻿@{
+    Layout = null;
+}
+
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <script src="/Resource/JS/jquery-1.8.0.min.js"></script>
+    <script src="/Resource/layer/layer.js"></script>
+    <script src="/Resource/JS/global.js"></script>
+    <link href="/Resource/CSS/style.css" type="text/css" rel="stylesheet" />
+</head>
+<body style="padding:10px">
+    <form action="/Manager/ExpertManager_Submit" method="post" onsubmit="return FormSubmitCallBack(this);">
+        <table width="100%" class="formtable" cellpadding="2" cellspacing="2">
+            <tr>
+                <td width="40%" class="tdleft_even"><span class="text">姓名<font style="color:Red">*</font>:</span></td>
+                <td width="60%" class="tdright"><input class="input" type="text" value="" style="width:200px" name="realname" id="realname" onblur="checkname(this.value);"></td>
+            </tr>
+            <tr>
+                <td width="40%" class="tdleft_ord"><span class="text">登录账号<font style="color:Red">*</font>:</span></td>
+                <td width="60%"><input class="input" type="text" value="" style="width:200px" name="username" id="username"></td>
+            </tr>
+            <tr>
+                <td width="40%" class="tdleft_even"><span class="text">密码<font style="color:Red">*</font>:</span></td>
+                <td width="60%"><input class="input" type="password" value="" style="width:200px" name="password" id="password"></td>
+            </tr>
+            <tr>
+                <td width="40%" class="tdleft_even"><span class="text">所属单位:</span></td>
+                <td width="60%" class="tdright"><input class="input" type="text" value="" style="width:200px" name="company" id="company"></td>
+            </tr>
+            <tr>
+                <td width="40%" class="tdleft_even"><span class="text">备注:</span></td>
+                <td width="60%" class="tdright"><textarea style="width:200px;height:80px;" name="memo" id="memo"></textarea></td>
+            </tr>
+            <tr>
+                <td width="40%" class="tdleft_ord"><span class="text">状态:</span></td>
+                <td width="60%" class="tdright"><label><input type="radio" name="enable" value="true" checked /><span class="text">有效</span></label><label style="margin-left:10px;"><input type="radio" name="enable" value="false" /><span class="text">无效</span></label></td>
+            </tr>
+            <tr>
+                <td colspan="2" align="center" class="tdleft_even"><input type="submit" class="input button" value="提交" style="width:100px"></td>
+            </tr>
+        </table>
+    </form>
+    <script>
+        function checkname(name) {
+            TF.ajaxDo("/Manager/CheckName?name=" + name, function (obj) {
+                $("#realname").next("span").remove();
+                if (obj.exist) {
+                    $("#realname").after("<span style='color:red;font-size:10px;'>有重名</span>");
+                } else {
+                    $("#realname").after("<span style='color:green;font-size:10px;'>无重名</span>");
+                }
+            });
+        }
+    </script>
+</body>
+</html>

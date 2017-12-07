@@ -1,0 +1,670 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>
+    </ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{47E55DB3-F541-46F4-86E9-EA88AFB49E3A}</ProjectGuid>
+    <ProjectTypeGuids>{E3E379DF-F4C6-4180-9B81-6769533ABE47};{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>TFA.Vote</RootNamespace>
+    <AssemblyName>TFA.Vote</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <MvcBuildViews>false</MvcBuildViews>
+    <UseIISExpress>true</UseIISExpress>
+    <IISExpressSSLPort />
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
+    <Use64BitIISExpress />
+    <UseGlobalApplicationHostFile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Castle.Core, Version=1.1.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
+      <HintPath>..\packages\Castle.Core.1.1.0\lib\Castle.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Castle.DynamicProxy2, Version=2.1.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
+      <HintPath>..\packages\Castle.DynamicProxy.2.1.0\lib\Castle.DynamicProxy2.dll</HintPath>
+    </Reference>
+    <Reference Include="ClaySharp, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Clay.1.0\lib\ClaySharp.dll</HintPath>
+    </Reference>
+    <Reference Include="ICSharpCode.SharpZipLib">
+      <HintPath>..\lib\ICSharpCode.SharpZipLib.dll</HintPath>
+    </Reference>
+    <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=1b44e1d426115821, processorArchitecture=MSIL">
+      <HintPath>..\packages\log4net.1.2.10\lib\2.0\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="NPOI">
+      <HintPath>..\lib\NPOI.dll</HintPath>
+    </Reference>
+    <Reference Include="NPOI.OOXML">
+      <HintPath>..\lib\NPOI.OOXML.dll</HintPath>
+    </Reference>
+    <Reference Include="NPOI.OpenXml4Net">
+      <HintPath>..\lib\NPOI.OpenXml4Net.dll</HintPath>
+    </Reference>
+    <Reference Include="NPOI.OpenXmlFormats">
+      <HintPath>..\lib\NPOI.OpenXmlFormats.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Web.DynamicData" />
+    <Reference Include="System.Web.Entity" />
+    <Reference Include="System.Web.ApplicationServices" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Web.Abstractions" />
+    <Reference Include="System.Web.Routing" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.EnterpriseServices" />
+    <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Web.Mvc.FixedDisplayModes, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.AspNet.Mvc.FixedDisplayModes.1.0.0\lib\net40\Microsoft.Web.Mvc.FixedDisplayModes.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\packages\Newtonsoft.Json.4.5.11\lib\net40\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.Net.Http.2.0.30506.0\lib\net40\System.Net.Http.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http.Formatting, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.4.0.30506.0\lib\net40\System.Net.Http.Formatting.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http.WebRequest">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.Net.Http.2.0.30506.0\lib\net40\System.Net.Http.WebRequest.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Helpers, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.2.0.30506.0\lib\net40\System.Web.Helpers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Core.4.0.30506.0\lib\net40\System.Web.Http.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Http.WebHost, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.WebHost.4.0.30506.0\lib\net40\System.Web.Http.WebHost.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Mvc, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.AspNet.Mvc.4.0.30506.0\lib\net40\System.Web.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Razor, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.AspNet.Razor.2.0.30506.0\lib\net40\System.Web.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.2.0.30506.0\lib\net40\System.Web.WebPages.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Deployment, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.2.0.30506.0\lib\net40\System.Web.WebPages.Deployment.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Razor, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.2.0.30506.0\lib\net40\System.Web.WebPages.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="ToolGood.ReadyGo">
+      <HintPath>..\lib\ToolGood.ReadyGo.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Code\BaseController.cs" />
+    <Compile Include="Code\Config.cs" />
+    <Compile Include="Code\NPOIHelper.cs" />
+    <Compile Include="Code\UserAttribute.cs" />
+    <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\DataController.cs" />
+    <Compile Include="Controllers\ExpertController.cs" />
+    <Compile Include="Controllers\ExportController.cs" />
+    <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\InitController.cs" />
+    <Compile Include="Controllers\ManagerController.cs" />
+    <Compile Include="Controllers\SelectController.cs" />
+    <Compile Include="Controllers\ShowController.cs" />
+    <Compile Include="Global.asax.cs">
+      <DependentUpon>Global.asax</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Award.cs" />
+    <Compile Include="Models\ModelBase.cs" />
+    <Compile Include="Models\Project.cs" />
+    <Compile Include="Models\ProjectReviewDetail.cs" />
+    <Compile Include="Models\Review.cs" />
+    <Compile Include="Models\User.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="App_Start\FilterConfig.cs" />
+    <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="App_Start\WebApiConfig.cs" />
+    <Content Include="Global.asax" />
+    <Content Include="Resource\CSS\style.css" />
+    <Content Include="Resource\dhtmlx\codebase\dhtmlx.css" />
+    <Content Include="Resource\dhtmlx\codebase\dhtmlx.js" />
+    <Content Include="Resource\dhtmlx\codebase\dhtmlx_deprecated.js" />
+    <Content Include="Resource\dhtmlx\codebase\extend.js" />
+    <Content Include="Resource\dhtmlx\codebase\ext\swfobject.js" />
+    <Content Include="Resource\dhtmlx\codebase\ext\uploader.swf" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxacc_skyblue\dhxacc_btns.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxacc_skyblue\dhxacc_cell_progress.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxcalendar_skyblue\dhxcalendar_arrow_left.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxcalendar_skyblue\dhxcalendar_arrow_right.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxcalendar_skyblue\dhxcalendar_clock.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxcalendar_skyblue\dhxcalendar_mark.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxcalendar_skyblue\dhxcalendar_selector_bottom.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxcalendar_skyblue\dhxcalendar_selector_top.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxcarousel_skyblue\dhxcarousel_cell_progress.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxcombo_skyblue\dhxcombo_arrow_down.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxcombo_skyblue\dhxcombo_arrow_down_dis.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxcombo_skyblue\dhxcombo_chbx.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxcp_skyblue\dhxcp_colors.png" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxcp_skyblue\dhxcp_icon_save.png" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxdataview_skyblue\dnd_selector.png" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxdataview_skyblue\dnd_selector_cells.png" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxdataview_skyblue\dnd_selector_lines.png" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxdataview_skyblue\marker.png" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxeditor_skyblue\align_center.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxeditor_skyblue\align_justify.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxeditor_skyblue\align_left.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxeditor_skyblue\align_right.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxeditor_skyblue\bold.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxeditor_skyblue\buttons.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxeditor_skyblue\clear.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxeditor_skyblue\h1.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxeditor_skyblue\h2.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxeditor_skyblue\h3.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxeditor_skyblue\h4.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxeditor_skyblue\indent_dec.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxeditor_skyblue\indent_inc.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxeditor_skyblue\italic.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxeditor_skyblue\list_bullet.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxeditor_skyblue\list_number.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxeditor_skyblue\script_sub.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxeditor_skyblue\script_super.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxeditor_skyblue\strike.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxeditor_skyblue\underline.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxform_skyblue\dhxform_chbxrd.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxform_skyblue\dhxform_image_uploading.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxform_skyblue\dhxform_upload_buttons.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxform_skyblue\dhxform_upload_uploading.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxgrid_skyblue\ar_left.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxgrid_skyblue\ar_left_abs.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxgrid_skyblue\ar_left_abs_dis.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxgrid_skyblue\ar_left_dis.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxgrid_skyblue\ar_right.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxgrid_skyblue\ar_right_abs.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxgrid_skyblue\ar_right_abs_dis.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxgrid_skyblue\ar_right_dis.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxgrid_skyblue\blank.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxgrid_skyblue\combo_select_dhx_skyblue.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxgrid_skyblue\dyn_.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxgrid_skyblue\dyn_down.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxgrid_skyblue\dyn_up.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxgrid_skyblue\imageloaderror.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxgrid_skyblue\item_chk0.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxgrid_skyblue\item_chk0_dis.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxgrid_skyblue\item_chk1.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxgrid_skyblue\item_chk1_dis.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxgrid_skyblue\minus.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxgrid_skyblue\paging_page.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxgrid_skyblue\paging_pages.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxgrid_skyblue\paging_rows.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxgrid_skyblue\plus.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxgrid_skyblue\radio_chk0.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxgrid_skyblue\radio_chk0_dis.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxgrid_skyblue\radio_chk1.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxgrid_skyblue\radio_chk1_dis.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxgrid_skyblue\sort_asc.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxgrid_skyblue\sort_desc.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxgrid_skyblue\tree\blank.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxgrid_skyblue\tree\folder.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxgrid_skyblue\tree\leaf.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxgrid_skyblue\tree\line.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxgrid_skyblue\tree\line1.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxgrid_skyblue\tree\line2.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxgrid_skyblue\tree\line3.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxgrid_skyblue\tree\line4.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxgrid_skyblue\tree\minus.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxgrid_skyblue\tree\minus1.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxgrid_skyblue\tree\minus2.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxgrid_skyblue\tree\minus3.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxgrid_skyblue\tree\minus4.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxgrid_skyblue\tree\minus5.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxgrid_skyblue\tree\plus.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxgrid_skyblue\tree\plus1.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxgrid_skyblue\tree\plus2.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxgrid_skyblue\tree\plus3.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxgrid_skyblue\tree\plus4.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxgrid_skyblue\tree\plus5.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxlayout_skyblue\dhxlayout_cell_btns.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxlayout_skyblue\dhxlayout_cell_progress.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxlayout_skyblue\dhxlayout_sep_h.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxlayout_skyblue\dhxlayout_sep_v.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxmenu_skyblue\dhxmenu_arrow_down.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxmenu_skyblue\dhxmenu_arrow_down_dis.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxmenu_skyblue\dhxmenu_arrow_up.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxmenu_skyblue\dhxmenu_arrow_up_dis.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxmenu_skyblue\dhxmenu_chrd.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxmenu_skyblue\dhxmenu_loader.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxmenu_skyblue\dhxmenu_subar.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxpopup_skyblue\dhxpopup_arrow_bottom.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxpopup_skyblue\dhxpopup_arrow_left.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxpopup_skyblue\dhxpopup_arrow_right.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxpopup_skyblue\dhxpopup_arrow_top.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxribbon_skyblue\dhxribbon_arrow.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxribbon_skyblue\dhxribbon_checked.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxribbon_skyblue\dhxribbon_checked_dis.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxsidebar_skyblue\dhxsidebar_arrow_down.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxsidebar_skyblue\dhxsidebar_arrow_up.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxsidebar_skyblue\dhxsidebar_cell_progress.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxsidebar_skyblue\dhxsidebar_side_icon.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxtabbar_skyblue\dhxtabbar_arrows.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxtabbar_skyblue\dhxtabbar_button_close.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxtabbar_skyblue\dhxtabbar_cell_progress.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxtoolbar_skyblue\dhxtoolbar_arrow.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxtoolbar_skyblue\dhxtoolbar_arrow_dis.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxtree_skyblue\blank.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxtree_skyblue\but_cut.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxtree_skyblue\folderClosed.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxtree_skyblue\folderOpen.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxtree_skyblue\iconCheckAll.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxtree_skyblue\iconCheckDis.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxtree_skyblue\iconCheckGray.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxtree_skyblue\iconUncheckAll.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxtree_skyblue\iconUncheckDis.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxtree_skyblue\leaf.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxtree_skyblue\line.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxtree_skyblue\line1.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxtree_skyblue\line1_rtl.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxtree_skyblue\line2.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxtree_skyblue\line2_rtl.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxtree_skyblue\line3.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxtree_skyblue\line3_rtl.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxtree_skyblue\line4.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxtree_skyblue\line4_rtl.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxtree_skyblue\lock.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxtree_skyblue\minus.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxtree_skyblue\minus1.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxtree_skyblue\minus2.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxtree_skyblue\minus2_rtl.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxtree_skyblue\minus3.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxtree_skyblue\minus3_rtl.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxtree_skyblue\minus4.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxtree_skyblue\minus4_rtl.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxtree_skyblue\minus5.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxtree_skyblue\minus5_rtl.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxtree_skyblue\plus.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxtree_skyblue\plus1.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxtree_skyblue\plus2.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxtree_skyblue\plus2_rtl.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxtree_skyblue\plus3.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxtree_skyblue\plus3_rtl.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxtree_skyblue\plus4.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxtree_skyblue\plus4_rtl.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxtree_skyblue\plus5.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxtree_skyblue\plus5_rtl.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxtree_skyblue\radio_off.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxtree_skyblue\radio_on.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxwins_skyblue\dhxwins_buttons.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxwins_skyblue\dhxwins_icon.gif" />
+    <Content Include="Resource\dhtmlx\codebase\imgs\dhxwins_skyblue\dhxwins_progress.gif" />
+    <Content Include="Resource\dhtmlx\codebase\thirdparty\excanvas\excanvas.js" />
+    <Content Include="Resource\dhtmlx\dhtmlxcombo.css" />
+    <Content Include="Resource\dhtmlx\dhtmlxcombo.js" />
+    <Content Include="Resource\dhtmlx\dhtmlxcombo_deprecated.js" />
+    <Content Include="Resource\dhtmlx\imgs\dhxcombo_skyblue\dhxcombo_arrow_down.gif" />
+    <Content Include="Resource\dhtmlx\imgs\dhxcombo_skyblue\dhxcombo_arrow_down_dis.gif" />
+    <Content Include="Resource\dhtmlx\imgs\dhxcombo_skyblue\dhxcombo_chbx.gif" />
+    <Content Include="Resource\huajian\css\font-awesome.css" />
+    <Content Include="Resource\huajian\css\layui.css" />
+    <Content Include="Resource\huajian\css\main_huajian.css" />
+    <Content Include="Resource\huajian\images\expertbg.png" />
+    <Content Include="Resource\huajian\images\index_bj4.jpg" />
+    <Content Include="Resource\huajian\images\logo.png" />
+    <Content Include="Resource\huajian\images\pc_bj.jpg" />
+    <Content Include="Resource\huajian\images\pc_bj2.jpg" />
+    <Content Include="Resource\huajian\images\small_logo.ico" />
+    <Content Include="Resource\huajian\js\layui.all.js" />
+    <Content Include="Resource\images\banner-right-bak.png" />
+    <Content Include="Resource\images\banner-right.png" />
+    <Content Include="Resource\images\headbg.png" />
+    <Content Include="Resource\images\menubg.png" />
+    <Content Include="Resource\images\navbg.gif" />
+    <Content Include="Resource\images\transparent.gif" />
+    <Content Include="Resource\JS\global.js" />
+    <Content Include="Resource\JS\iscroll.js" />
+    <Content Include="Resource\JS\jquery-1.7.1.min.js" />
+    <Content Include="Resource\JS\jquery-1.8.0.min.js" />
+    <Content Include="Resource\JS\jquery.media.js" />
+    <Content Include="Resource\JS\jquery.scrollfix.js" />
+    <Content Include="Resource\JS\json2.js" />
+    <Content Include="Resource\laydate\laydate.js" />
+    <Content Include="Resource\laydate\need\laydate.css" />
+    <Content Include="Resource\laydate\skins\dahong\icon.png" />
+    <Content Include="Resource\laydate\skins\dahong\laydate.css" />
+    <Content Include="Resource\laydate\skins\danlan\icon.png" />
+    <Content Include="Resource\laydate\skins\danlan\laydate.css" />
+    <Content Include="Resource\laydate\skins\default\icon.png" />
+    <Content Include="Resource\laydate\skins\default\laydate.css" />
+    <Content Include="Resource\laydate\skins\qianhuang\icon.png" />
+    <Content Include="Resource\laydate\skins\qianhuang\laydate.css" />
+    <Content Include="Resource\laydate\skins\yahui\icon.png" />
+    <Content Include="Resource\laydate\skins\yahui\laydate.css" />
+    <Content Include="Resource\laydate\skins\yalan\icon.png" />
+    <Content Include="Resource\laydate\skins\yalan\laydate.css" />
+    <Content Include="Resource\layer\extend\layer.ext.js" />
+    <Content Include="Resource\layer\layer.js" />
+    <Content Include="Resource\layer\skin\default\icon-ext.png" />
+    <Content Include="Resource\layer\skin\default\icon.png" />
+    <Content Include="Resource\layer\skin\default\loading-0.gif" />
+    <Content Include="Resource\layer\skin\default\loading-1.gif" />
+    <Content Include="Resource\layer\skin\default\loading-2.gif" />
+    <Content Include="Resource\layer\skin\layer.css" />
+    <Content Include="Resource\layer\skin\layer.ext.css" />
+    <Content Include="Resource\layui\css\layui.css" />
+    <Content Include="Resource\layui\css\layui.mobile.css" />
+    <Content Include="Resource\layui\css\modules\code.css" />
+    <Content Include="Resource\layui\css\modules\laydate\default\laydate.css" />
+    <Content Include="Resource\layui\css\modules\layer\default\icon-ext.png" />
+    <Content Include="Resource\layui\css\modules\layer\default\icon.png" />
+    <Content Include="Resource\layui\css\modules\layer\default\layer.css" />
+    <Content Include="Resource\layui\css\modules\layer\default\loading-0.gif" />
+    <Content Include="Resource\layui\css\modules\layer\default\loading-1.gif" />
+    <Content Include="Resource\layui\css\modules\layer\default\loading-2.gif" />
+    <Content Include="Resource\layui\images\face\0.gif" />
+    <Content Include="Resource\layui\images\face\1.gif" />
+    <Content Include="Resource\layui\images\face\10.gif" />
+    <Content Include="Resource\layui\images\face\11.gif" />
+    <Content Include="Resource\layui\images\face\12.gif" />
+    <Content Include="Resource\layui\images\face\13.gif" />
+    <Content Include="Resource\layui\images\face\14.gif" />
+    <Content Include="Resource\layui\images\face\15.gif" />
+    <Content Include="Resource\layui\images\face\16.gif" />
+    <Content Include="Resource\layui\images\face\17.gif" />
+    <Content Include="Resource\layui\images\face\18.gif" />
+    <Content Include="Resource\layui\images\face\19.gif" />
+    <Content Include="Resource\layui\images\face\2.gif" />
+    <Content Include="Resource\layui\images\face\20.gif" />
+    <Content Include="Resource\layui\images\face\21.gif" />
+    <Content Include="Resource\layui\images\face\22.gif" />
+    <Content Include="Resource\layui\images\face\23.gif" />
+    <Content Include="Resource\layui\images\face\24.gif" />
+    <Content Include="Resource\layui\images\face\25.gif" />
+    <Content Include="Resource\layui\images\face\26.gif" />
+    <Content Include="Resource\layui\images\face\27.gif" />
+    <Content Include="Resource\layui\images\face\28.gif" />
+    <Content Include="Resource\layui\images\face\29.gif" />
+    <Content Include="Resource\layui\images\face\3.gif" />
+    <Content Include="Resource\layui\images\face\30.gif" />
+    <Content Include="Resource\layui\images\face\31.gif" />
+    <Content Include="Resource\layui\images\face\32.gif" />
+    <Content Include="Resource\layui\images\face\33.gif" />
+    <Content Include="Resource\layui\images\face\34.gif" />
+    <Content Include="Resource\layui\images\face\35.gif" />
+    <Content Include="Resource\layui\images\face\36.gif" />
+    <Content Include="Resource\layui\images\face\37.gif" />
+    <Content Include="Resource\layui\images\face\38.gif" />
+    <Content Include="Resource\layui\images\face\39.gif" />
+    <Content Include="Resource\layui\images\face\4.gif" />
+    <Content Include="Resource\layui\images\face\40.gif" />
+    <Content Include="Resource\layui\images\face\41.gif" />
+    <Content Include="Resource\layui\images\face\42.gif" />
+    <Content Include="Resource\layui\images\face\43.gif" />
+    <Content Include="Resource\layui\images\face\44.gif" />
+    <Content Include="Resource\layui\images\face\45.gif" />
+    <Content Include="Resource\layui\images\face\46.gif" />
+    <Content Include="Resource\layui\images\face\47.gif" />
+    <Content Include="Resource\layui\images\face\48.gif" />
+    <Content Include="Resource\layui\images\face\49.gif" />
+    <Content Include="Resource\layui\images\face\5.gif" />
+    <Content Include="Resource\layui\images\face\50.gif" />
+    <Content Include="Resource\layui\images\face\51.gif" />
+    <Content Include="Resource\layui\images\face\52.gif" />
+    <Content Include="Resource\layui\images\face\53.gif" />
+    <Content Include="Resource\layui\images\face\54.gif" />
+    <Content Include="Resource\layui\images\face\55.gif" />
+    <Content Include="Resource\layui\images\face\56.gif" />
+    <Content Include="Resource\layui\images\face\57.gif" />
+    <Content Include="Resource\layui\images\face\58.gif" />
+    <Content Include="Resource\layui\images\face\59.gif" />
+    <Content Include="Resource\layui\images\face\6.gif" />
+    <Content Include="Resource\layui\images\face\60.gif" />
+    <Content Include="Resource\layui\images\face\61.gif" />
+    <Content Include="Resource\layui\images\face\62.gif" />
+    <Content Include="Resource\layui\images\face\63.gif" />
+    <Content Include="Resource\layui\images\face\64.gif" />
+    <Content Include="Resource\layui\images\face\65.gif" />
+    <Content Include="Resource\layui\images\face\66.gif" />
+    <Content Include="Resource\layui\images\face\67.gif" />
+    <Content Include="Resource\layui\images\face\68.gif" />
+    <Content Include="Resource\layui\images\face\69.gif" />
+    <Content Include="Resource\layui\images\face\7.gif" />
+    <Content Include="Resource\layui\images\face\70.gif" />
+    <Content Include="Resource\layui\images\face\71.gif" />
+    <Content Include="Resource\layui\images\face\8.gif" />
+    <Content Include="Resource\layui\images\face\9.gif" />
+    <Content Include="Resource\layui\layui.all.js" />
+    <Content Include="Resource\layui\layui.js" />
+    <Content Include="Resource\layui\lay\modules\carousel.js" />
+    <Content Include="Resource\layui\lay\modules\code.js" />
+    <Content Include="Resource\layui\lay\modules\element.js" />
+    <Content Include="Resource\layui\lay\modules\flow.js" />
+    <Content Include="Resource\layui\lay\modules\form.js" />
+    <Content Include="Resource\layui\lay\modules\jquery.js" />
+    <Content Include="Resource\layui\lay\modules\laydate.js" />
+    <Content Include="Resource\layui\lay\modules\layedit.js" />
+    <Content Include="Resource\layui\lay\modules\layer.js" />
+    <Content Include="Resource\layui\lay\modules\laypage.js" />
+    <Content Include="Resource\layui\lay\modules\laytpl.js" />
+    <Content Include="Resource\layui\lay\modules\mobile.js" />
+    <Content Include="Resource\layui\lay\modules\table.js" />
+    <Content Include="Resource\layui\lay\modules\tree.js" />
+    <Content Include="Resource\layui\lay\modules\upload.js" />
+    <Content Include="Resource\layui\lay\modules\util.js" />
+    <Content Include="Resource\monthpicker\monthpicker.css" />
+    <Content Include="Resource\monthpicker\monthpicker.js" />
+    <Content Include="Resource\powerfloat\css\powerFloat.css" />
+    <Content Include="Resource\powerfloat\js\jquery-powerFloat.js" />
+    <Content Include="Resource\powerfloat\js\mini\jquery-powerFloat-min.js" />
+    <Content Include="test.html" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Web.Debug.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </Content>
+    <Content Include="Web.Release.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </Content>
+    <Content Include="Views\Web.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="App_Data\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Resource\dhtmlx\codebase\ext\dhxupload.xap" />
+    <Content Include="Resource\dhtmlx\codebase\thirdparty\excanvas\AUTHORS" />
+    <Content Include="Resource\dhtmlx\codebase\thirdparty\excanvas\COPYING" />
+    <Content Include="Resource\dhtmlx\codebase\thirdparty\excanvas\README" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Account\Login2.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\TF.Common\TF.Common.csproj">
+      <Project>{b29e6053-9aa0-4551-89d2-b5ffb164c93a}</Project>
+      <Name>TF.Common</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Shared\_Layout.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Manager\Index.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Manager\ExpertManager_List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Manager\ExpertManager_Add.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Resource\layui\font\iconfont.eot" />
+    <Content Include="Resource\layui\font\iconfont.svg" />
+    <Content Include="Resource\layui\font\iconfont.ttf" />
+    <Content Include="Resource\layui\font\iconfont.woff" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Manager\ExpertManager_Edit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Manager\ProjectManager_List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Manager\ProjectManager_View.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Shared\_ProjectDetail.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Shared\_ProjectAttach.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Manager\AwardManager_List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Manager\AwardManager_Add.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Select\Experts.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Select\Projects.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Show\Project.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Show\PDF.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Manager\ReviewManager_List.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Manager\ReviewManager_Add.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Manager\ReviewManager_Summary.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Manager\ReviewManager_ViewEdit.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Manager\ReviewManager_ViewIng.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Shared\_LayoutExpert2.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Expert\Index2.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Expert\Review2.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Manager\ReviewManager_ViewFinish.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Show\ProjectReviewDetail.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Show\ExcludeExperts.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Manager\ReviewManager_AddNext.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
+    <Content Include="Views\Manager\ReviewManager_FullView.cshtml" />
+    <Content Include="Resource\huajian\fonts\fontawesome-webfont.ttf" />
+    <Content Include="Resource\huajian\fonts\iconfont.ttf" />
+    <Content Include="Resource\huajian\images\Thumbs.db" />
+    <Content Include="Views\Account\Login.cshtml" />
+    <Content Include="Views\Expert\Index.cshtml" />
+    <Content Include="Views\Shared\_LayoutExpert.cshtml" />
+    <Content Include="Views\Expert\Review.cshtml" />
+    <Content Include="Views\Manager\ProjectManager_ViewFrame.cshtml" />
+  </ItemGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
+  <Target Name="MvcBuildViews" AfterTargets="AfterBuild" Condition="'$(MvcBuildViews)'=='true'">
+    <AspNetCompiler VirtualPath="temp" PhysicalPath="$(WebProjectOutputDir)" />
+  </Target>
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>True</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>16303</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>http://localhost:16303/</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target> -->
+</Project>

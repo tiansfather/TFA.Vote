@@ -1,0 +1,85 @@
+﻿@{
+    Layout = null;
+    var user = Config.CurrentUser;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>@Config.SoftTitle</title>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <script src="/Resource/JS/jquery-1.7.1.min.js"></script>
+
+    <script src="/Resource/JS/global.js"></script>
+    <link href="/Resource/CSS/style.css" type="text/css" rel="stylesheet" />
+    <link href="/Resource/layui/css/layui.css" rel="stylesheet" />
+</head>
+<body>
+    <div id="base" class="">
+        <iframe id="_hidden" name="_hidden" style="display:none"></iframe>
+        <div id="head">
+            <div id="head_left"></div>
+            <div id="head_right">
+                <div id="headtext">
+                    <p><a>@Config.SoftTitle</a></p>
+                </div>
+            </div>
+            <div id="head_account">
+                @user.RealName 您好,现在是 @DateTime.Now.ToString("yyyy年MM月dd日 HH时mm分")
+                <a href="#_" style="margin-left:20px;color:Blue;text-decoration:underline" onclick="changepassword();">修改密码</a>
+                <a href="/Account/Logout" style="margin-left:20px;color:Blue;text-decoration:underline">退出</a>
+            </div>
+        </div>     
+
+        
+        <div id="panel_password" style="display:none;">
+            <div style="padding:20px;">
+                <form action="/Account/ChangePassword" method="post" onsubmit="return FormSubmitCallBack(this);">
+                    <table width="100%" class="formtable" cellpadding="2" cellspacing="2">
+                        <tr>
+                            <td width="40%" class="tdleft_even"><span class="text">原密码<font style="color:Red">*</font>:</span></td>
+                            <td width="60%" class="tdright"><input class="input" type="password" value="" style="width:150px" name="oripassword" id="oripassword"></td>
+                        </tr>
+                        <tr>
+                            <td width="40%" class="tdleft_ord"><span class="text">新密码<font style="color:Red">*</font>:</span></td>
+                            <td width="60%"><input class="input" type="password" value="" style="width:150px" name="newpassword" id="newpassword"></td>
+                        </tr>
+                        <tr>
+                            <td width="40%" class="tdleft_even"><span class="text">重复新密码<font style="color:Red">*</font>:</span></td>
+                            <td width="60%"><input class="input" type="password" value="" style="width:150px" name="repassword" id="repassword"></td>
+                        </tr>
+                        <tr>
+                            <td colspan="2" align="center" class="tdleft_ord"><input type="submit" class="input button" value="提交" style="width:100px"></td>
+                        </tr>
+                    </table>
+                </form>
+            </div>
+        </div>
+
+        <div >
+            @RenderBody()
+        </div>
+    </div>
+    <script src="/Resource/JS/jquery.scrollfix.js"></script>
+    <script src="/Resource/layui/layui.all.js"></script>
+    <script>
+        $(function () {
+            
+        });
+
+        function changepassword() {
+            //弹出框
+            layer.open({
+                type: 1,
+                title: '修改密码',
+                closeBtn: 1,
+                area: ['400px', '250px'],
+                shadeClose: true,
+                content: $("#panel_password").html()
+            });
+        }
+    </script>
+    @RenderSection("script", false)
+</body>
+</html>
+

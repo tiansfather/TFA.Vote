@@ -1,0 +1,388 @@
+﻿@model TFA.Vote.Models.Award
+@{
+
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    List<TFA.Vote.Models.User> experts = Model == null ? new List<TFA.Vote.Models.User>() : Model.Experts;
+    var projects= (Model == null ? new List<TFA.Vote.Models.Project>() : Model.Projects).Select(o=> {
+        var awardproject = TFA.Vote.Config.Helper.CreateWhere<TFA.Vote.Models.AwardProject>().Where(a => a.AwardID == Model.ID && a.ProjectID == o.ID).Single();
+        return new { o.ID,o.ProjectName,o.DesignCompany,o.DesignType,o.DesignYear,o.BuildingCompany,o.BuildingType,awardproject.ExcludeExpertIDs,awardproject.Sort,awardproject.BaseScore};
+    }).OrderBy(o=>o.Sort).ToList();
+}
+<style>
+    /*td.edit {
+        background: lightblue;
+    }*/
+</style>
+<div id="nav">
+    <span>奖项管理</span>
+    <input type="button" class="input button" value="返回" style="width:100px;float:right;margin-left:15px;" onclick="history.back(-1);" />    
+    <input type="button" class="input button" value="保存" style="width:100px;float:right;" onclick="savedata();" />
+</div>
+<div id="form">
+    <form class="searchForm">
+        <input type="hidden" name="id" value="@(Model==null?0:Model.ID)"/>
+        <table width="500" class="formtable minitd" cellpadding="2" cellspacing="2">
+            <tr>
+                <td width="30%" class="tdleft_even"><span class="text">奖项名称:</span></td>
+                <td width="50%" class="tdright"><input class="input" type="text" value="@(Model==null?"":Model.AwardName)" style="width:250px" name="awardname"></td>
+                
+            </tr>
+            <tr>
+                <td width="30%" class="tdleft_even"><span class="text">备注:</span></td>
+                <td width="50%" class="tdright"><input class="input" type="text" value="@(Model==null?"":Model.Memo)" style="width:250px" name="memo"></td>
+
+            </tr>
+        </table>
+    </form>
+</div>
+<div class="layui-tab" lay-filter="mytab">
+    <ul class="layui-tab-title">
+        <li class="layui-this">参选专家</li>
+        <li>参选项目</li>
+    </ul>
+    <div class="layui-tab-content">
+        <div class="layui-tab-item layui-show">
+            <input type="button" class="input button" value="选择专家" style="width:100px" onclick="selExperts()" />
+            <input type="text" class="input" placeholder="请输入专家名称进行查询" style="width:180px;margin-left:20px;" onkeyup="filterExperts(this.value);" onblur="filterExperts(this.value)"/>
+            <table id="expertlist" lay-filter="expertlist"></table>
+        </div>
+        <div class="layui-tab-item">
+            <input type="button" class="input button" value="选择项目" style="width:100px" onclick="selProjects()" />
+            <input type="text" class="input" placeholder="请输入项目名称进行查询" style="width:180px;margin-left:20px;" onkeyup="filterProjects(this.value);" onblur="filterProjects(this.value)" />
+            <table id="projectlist" lay-filter="projectlist"></table>
+        </div>
+    </div>
+</div>
+<div style="margin-top:15px;">
+    @*<script type="text/html" id="sortTpl">
+        <div class="layui-btn-group">
+            <button class="layui-btn layui-btn-mini" onclick="reorderprojectitem({{d.ID}},-1.5)"><i class="layui-icon">&#xe619;</i></button>
+            <button class="layui-btn layui-btn-mini" onclick="reorderprojectitem({{d.ID}},+1.5)"><i class="layui-icon">&#xe61a;</i></button>
+        </div>
+    </script>*@
+    <script type="text/html" id="sortTpl">
+        <input type="text" class="layui-input" style="height:25px;text-align:center;padding:0;" value="{{d.Sort}}" onblur="reorderprojectitem({{d.ID}},this.value)"/>
+    </script>
+    <script type="text/html" id="projectTpl">
+        <a href="#_" style="color:blue;text-decoration:underline" onclick="showProject({{d.ID}})">{{d.ProjectName}}</a>
+    </script>
+    <script type="text/html" id="btnTpl">
+        <a class="layui-btn layui-btn-mini layui-btn-danger" lay-event="del">移除</a>
+    </script>
+    <script type="text/html" id="excludeTpl">
+        <a class="layui-btn layui-btn-mini " lay-event="setexclude">设定</a>
+        <a class="layui-btn layui-btn-mini showexclude" lay-event="showexclude" count="{{d.ExcludeExpertIDs?d.ExcludeExpertIDs.split(',').length:0}}" ajaxurl="/Show/ExcludeExperts?ids={{d.ExcludeExpertIDs?d.ExcludeExpertIDs:""}}&projectid={{d.ID}}">查看[{{d.ExcludeExpertIDs?d.ExcludeExpertIDs.split(',').length:0}}]</a>
+    </script>
+    <script type="text/html" id="baseScoreTpl">
+        <input type="text" class="layui-input basescore" projectid="{{d.ID}}" style="height:25px;text-align:center;padding:0;" value="{{d.BaseScore?d.BaseScore:""}}" onblur="setprojectitemscore({{d.ID }},this.value)" />
+    </script>
+</div>
+
+@section script{
+
+    <script>
+        var table = layui.table;
+        var expertdata = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(experts));
+        var projectdata = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(projects));
+        function showProject(id) {
+            layer.open({
+                type: 2,
+                title: '项目详情',
+                closeBtn: 1,
+                area: ['850px', '500px'],
+                shadeClose: false,
+                content: "/Show/Project?id=" + id
+            });
+        }
+        function selExperts() {
+            var idarr = expertdata.map(function (o) { return o.ID; });
+            //弹出框
+            layer.open({
+                type: 2,
+                title: '选择专家',
+                closeBtn: 1,
+                area: ['850px', '500px'],
+                shadeClose: false,
+                content: "/Select/Experts?cb=selExpertsCallback&exclude=" + idarr.join(',')
+            });
+        }
+        function selExpertsCallback(data) {
+            layer.closeAll();
+            var tabledata = convertData(data);
+            expertdata = expertdata.concat(tabledata);
+            experttable.reload({ data: expertdata });
+        }
+        function selExcludeExperts(projectid,excludeids) {
+            var idarr = expertdata.map(function (o) { return o.ID; });
+            window.currentProjectID = projectid;
+            //弹出框
+            layer.open({
+                type: 2,
+                title: '选择专家',
+                closeBtn: 1,
+                area: ['850px', '500px'],
+                shadeClose: false,
+                content: "/Select/Experts?cb=selExcludeExpertsCallback&limitin=" + idarr.join(',') + "&exclude=" + excludeids
+            });
+        }
+        function selExcludeExpertsCallback(data) {
+            layer.closeAll();
+            var project = projectdata[findArrayItemById(projectdata, window.currentProjectID)];
+            if (!project.ExcludeExpertIDs) {
+                project.ExcludeExpertIDs = data.map(function (o) { return o.ID; }).join(',');
+            } else {
+                project.ExcludeExpertIDs =unique(project.ExcludeExpertIDs.split(',').concat(data.map(function (o) { return o.ID; }))).join(',');
+            }
+            projecttable.reload({ data: projectdata });
+        }
+        function removeExcludeExpert(projectid, expertid) {
+            layer.confirm('确认将此专家从回避专家中移除?', function (index) {
+                layer.close(index);
+                var project = projectdata[findArrayItemById(projectdata, projectid)];
+                console.log(project.ExcludeExpertIDs);
+                var expertIdArr = project.ExcludeExpertIDs.split(',');
+                expertIdArr.remove(expertid);
+                project.ExcludeExpertIDs = expertIdArr.join(',');
+                console.log(project.ExcludeExpertIDs);
+                projecttable.reload({ data: projectdata });
+            });
+        }
+        function selProjects() {
+            var idarr = projectdata.map(function (o) { return o.ID; });
+            //弹出框
+            layer.open({
+                type: 2,
+                title: '选择项目',
+                closeBtn: 1,
+                area: ['1200px', '600px'],
+                shadeClose: false,
+                content: "/Select/Projects?cb=selProjectsCallback&exclude=" + idarr.join(',')
+            });
+        }
+        
+        function selProjectsCallback(data) {
+            layer.closeAll();
+            var tabledata = convertData(data);
+            projectdata = projectdata.concat(tabledata);
+            reorderProjectData();
+            projecttable.reload({ data: projectdata });
+        }
+        function convertData(data) {
+            var result = [];
+            $.each(data, function (i, v) { result.push(v); });
+            return result;
+        }
+        function loadExpertTable() {
+            window.experttable=table.render({
+                elem: '#expertlist'
+                , limit: 1000
+                , data: expertdata
+                , height: 'full-315'
+                , cols: [[
+                    { field: 'RealName', title: '专家姓名', width: 150 }
+                    , { field: 'UserName', title: '登录帐号', width: 150 }
+                    , { field: 'Company', title: '所属单位', width: 150 }
+                    , { field: 'Memo', title: '备注', width: 200 }
+                    , { title: '操作', width: 80, toolbar: '#btnTpl' }
+                ]]
+            });
+
+        }
+        function loadProjectTable() {
+            window.projecttable = table.render({
+                elem: '#projectlist'
+                ,limit:1000
+                , data: projectdata
+                , height: 'full-315'
+                , cols: [[
+                    { field: 'Sort', title: '序号', width: 60, templet: '#sortTpl'}
+                    //, { title: '排序操作', width: 100 ,templet:'#sortTpl'}
+                    , { title: '回避专家', width: 150,templet:'#excludeTpl' }
+                    , { field: 'ProjectName', title: '项目名称', width: 180 ,templet:'#projectTpl'}
+                    //, { field: 'BuildingCompany', title: '建设单位', width: 150 }
+                    , { field: 'BuildingType', title: '建筑类别', width: 100 }
+                    , { field: 'DesignCompany', title: '设计单位', width: 180 }
+                    , { field: 'DesignYear', title: '设计时间', width: 100 }
+                    , { field: 'BaseScore', title: '基础分', width: 120, templet: '#baseScoreTpl' }
+                    , { title: '操作', width: 80, toolbar: '#btnTpl',fixed:'right' }
+                ]]
+                , done: function (res, curr, count) {
+                    $(".showexclude[count!=0]").powerFloat({
+                        targetMode: "ajax",
+                        target: function () {
+                            return $(this).attr("ajaxurl");
+                        },
+                        hoverHold: true,
+                        position: "6-8"
+                    });
+                    $("td[data-field='Sort']").addClass("edit");
+                }
+            });
+
+        }
+        function filterExperts(val) {
+            var filterData = expertdata.filter(function (item) {
+                if (!val) {
+                    return true;
+                } else {
+                    return item.RealName.indexOf(val) >= 0;
+                }
+            });
+            experttable.reload({ data: filterData });
+        }
+        function filterProjects(val) {
+            var filterData = projectdata.filter(function (item) {
+                if (!val) {
+                    return true;
+                } else {
+                    return item.ProjectName.indexOf(val) >= 0;
+                }
+            });
+            projecttable.reload({ data: filterData });
+        }
+         $(function () {
+             loadExpertTable();
+             //reorderProjectData();
+             loadProjectTable();
+             //一些事件监听
+             layui.element.on('tab(mytab)', function (data) {
+                 if (data.index == 1) {
+                     projecttable.reload({ data: projectdata });
+                 }
+             });
+             //监听工具条
+             table.on('tool(expertlist)', function (obj) { //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
+                 var data = obj.data; //获得当前行数据
+                 var layEvent = obj.event; //获得 lay-event 对应的值
+                 var tr = obj.tr; //获得当前行 tr 的DOM对象
+                 if (layEvent === 'del') { //删除
+                     layer.confirm('确认移除此专家?', function (index) {
+                         layer.close(index);
+                         obj.del();
+                         tr.remove();
+                         removeArrayItemById(expertdata, data.ID);
+                     });
+                 }
+             });
+             //监听工具条
+             table.on('tool(projectlist)', function (obj) { //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
+                 var data = obj.data; //获得当前行数据
+                 var layEvent = obj.event; //获得 lay-event 对应的值
+                 var tr = obj.tr; //获得当前行 tr 的DOM对象
+                 if (layEvent == 'setexclude') {
+                     console.log(obj.data);
+                     var excludeids = data.ExcludeExpertIDs ? data.ExcludeExpertIDs : "";
+                     selExcludeExperts(data.ID,excludeids);
+                 }
+                 else if (layEvent === 'del') { //删除
+                     layer.confirm('确认移除此项目?', function (index) {
+                         layer.close(index);
+                         obj.del();
+                         tr.remove();
+                         removeArrayItemById(projectdata, data.ID);
+                         reorderProjectData();
+                         projecttable.reload({ data: projectdata });
+                     });
+                 }
+             });
+             //监听单元格编辑
+             table.on('edit(projectlist)', function (obj) {
+                 console.log(obj);
+                 var value = obj.value //得到修改后的值
+                     , data = obj.data //得到所在行所有键值
+                     , field = obj.field; //得到字段
+                 if (isNaN(value) || value <= 0 || value % 1 != 0) {
+                     layer.msg("请正确输入序号");
+                     obj.update({
+                         Sort: projectdata[findArrayItemById(projectdata,data.ID)].Sort
+                     });
+                     return false;
+                 }
+                 reorderprojectitem(data.ID, value);
+                 //layer.msg('[ID: ' + data.id + '] ' + field + ' 字段更改为：' + value);
+             });
+        })
+         function removeArrayItemById(array, id) {
+             var index = findArrayItemById(array, id);
+             array.splice(index, 1);
+         }
+         function findArrayItemById(array, id) {
+             var index = -1;
+             $.each(array, function (i, v) {
+                 if (v.ID == id) {
+                     index = i;
+                     return false;
+                 }
+             })
+             return index;
+         }
+         function reorderProjectData() {
+             var sort = 0;
+             for (var i = 0; i < projectdata.length; i++) {
+                 if (!projectdata[i].Sort) {
+                     projectdata[i].Sort = ++sort ;
+                 } else {
+                     sort = projectdata[i].Sort;
+                 }
+                 //if (!projectdata[i].Sort) {
+                 //    var maxsort = Math.max.apply(null,projectdata.map(function (o) { return o.Sort; }));
+                 //    if (!maxsort || isNaN(maxsort)) {
+                 //        maxsort = 0;
+                 //    }
+                 //    projectdata[i].Sort = maxsort+ 1;
+                 //}
+             }
+             
+         }
+         function setprojectitemscore(id, val) {
+             for (var i = 0; i < projectdata.length; i++) {
+                 if (projectdata[i].ID == id) {
+                     projectdata[i].BaseScore = val;
+                     break;
+                 }
+             }
+         }
+         function reorderprojectitem(id, val) {
+             if (isNaN(val) || val <= 0 || val % 1 != 0) {
+                 layer.msg("请正确输入序号");
+                 
+                 return false;
+             }
+             for (var i = 0; i < projectdata.length; i++) {
+                 if (projectdata[i].ID == id) {
+                     projectdata[i].Sort = val;
+                     break;
+                 }
+             }
+             projectdata.sort(function (a, b) {
+                 return a.Sort - b.Sort;
+             });
+             reorderProjectData();
+             projecttable.reload({ data: projectdata });
+         }
+
+         function savedata() {
+             var awardname = $("input[name='awardname']").val();
+             if (!awardname) {
+                 TF.alert("请输入奖项名称");
+                 return false;
+             }
+
+             if (expertdata.length == 0) {
+                 TF.alert("请选择参与专家");
+                 return false;
+             }
+             if (projectdata.length == 0) {
+                 TF.alert("请选择参与项目");
+                 return false;
+             }
+             var expertids = expertdata.map(function (o) { return o.ID; }).join(',');
+             var projectids = projectdata.map(function (o) { return o.ID + '|' + (o.ExcludeExpertIDs ? o.ExcludeExpertIDs : "") + '|' + o.Sort + '|' + o.BaseScore; }).join('#');
+
+             var obj = $("form").serializeObj();
+             obj["expertids"] = expertids;
+             obj["projectids"] = projectids;
+             TF.ajaxDo("/Manager/AwardManager_Submit", TF.ajaxDone, { data: $.param(obj) });
+         }
+    </script>
+}

@@ -1,0 +1,295 @@
+﻿@model TFA.Vote.Models.ReviewDetail
+@using ToolGood.ReadyGo;
+@{
+    ViewBag.Title = "Review";
+    Layout = "~/Views/Shared/_LayoutExpert.cshtml";
+    var review = Config.Helper.SingleById<TFA.Vote.Models.Review>(Model.ReviewID);
+    var expert = Config.CurrentUser;
+    var projects = Config.Helper.CreateWhere<TFA.Vote.Models.Project>().AddWhereSql("id in(" + Model.SourceProjectIDs + ")").Select();
+
+    projects.ForEach(o =>
+    {
+        var awardproject = Config.Helper.CreateWhere<TFA.Vote.Models.AwardProject>()
+        .Where(a => a.AwardID == review.AwardID && a.ProjectID == o.ID).FirstOrDefault();
+        o.CustomData = awardproject;
+    });
+    //非投票类型的需要移除回避的项目
+    if (Model.ReviewMethod != TFA.Vote.Models.ReviewMethod.Vote)
+    {
+        projects.RemoveAll(o =>
+        {
+            var awardproject = o.CustomData as TFA.Vote.Models.AwardProject;
+            return awardproject == null || awardproject.ExcludeExpertIDs.Split(',').ToList().Any(a => a == expert.ID.ToString());
+        });
+    }
+
+    var methodsetting = Model.ReviewMethodSetting;
+    //是否有暂存的数据
+    var voteinfo = Model.VoteDetails.FirstOrDefault(o => o.ExpertID == expert.ID);
+    List<TFA.Vote.Models.ReviewVoteExpertProjectDetail> projectdetails = new List<TFA.Vote.Models.ReviewVoteExpertProjectDetail>();
+    if (voteinfo != null)
+    {
+        projectdetails = voteinfo.VoteProjectDetail;
+    }
+}
+<style>
+    tr.on input.pc_input2 {
+        color: #CE2329;
+    }
+    tr.none .pc_button1, tr.none .pc_button2 {
+        border: 1px solid #eee;
+        background: rgba(255,255,255,1);
+    }
+    tr.none .pc_input2 {
+        border: 1px solid #eee;
+        border-right: 0px solid #DDDEE1;
+        border-left: 0px solid #DDDEE1;
+    }
+    tr.none .pc_button1 i, tr.none .pc_button1 i:hover, tr.none .pc_button2 i, tr.none .pc_button2 i:hover {
+        color: #ddd;
+    }
+</style>
+<style>
+    .layui-icon-xuanz {
+        font-family: 宋体;
+        font-size: 16px;
+        font-style: normal;
+        font-weight: bold;
+    }
+</style>
+
+<header-wr>
+    <div class="wrap_tj">
+        <ul>
+            <li class="fheader-wrleft"><input type="button" class="layui-btn layui-btn-big" value="提 交" onClick="confirmsave()"></li>
+            <li class="fheader-wrleft"><input type="button" class="layui-btn layui-btn-big2" value="暂 存" onClick="savedata()"></li>
+            <li class="fheader-wrleft">
+                @if (Model.ReviewMethod == TFA.Vote.Models.ReviewMethod.Vote)
+                {
+                    <span>每人投@(methodsetting.VoteNumber)票</span>
+                }
+                else
+                {
+                    <i class="huadongjz fa-thumbs-o-down"></i><span>最低分@(methodsetting.MinScore)</span>　<i class="huadongjz fa-thumbs-o-up upfen"></i><span class="upfen">最高分@(methodsetting.MaxScore)</span>　<i class="huadongjz fa-angle-double-right gofen"></i><span class="gofen">步进@(methodsetting.ScoreStep)</span>
+                }
+
+            </li>
+            <li class="fright"><input type="button" class="layui-btn layui-btn-big3" value="返 回" onClick="history.back(-1);"></li>
+        </ul>
+    </div>
+</header-wr>
+<div id="main_ny_pc_bj">
+    <div class="wrap_content">
+        <div class="wrap_table layui-form">
+            <table class="layui-table" lay-size="lg">
+                <colgroup>
+                    @if (Model.ReviewMethod != TFA.Vote.Models.ReviewMethod.Vote)
+                    {
+                        <col width="110">
+                    }
+                    else
+                    {
+                        <col width="55">
+                    }
+                    <col width="55">
+                    <col >
+                    <col width="200">
+                    <col width="200">
+                    <col width="150">
+                    <col width="88">
+@if (Model.ReviewMethod != TFA.Vote.Models.ReviewMethod.Vote)
+{
+                    <col width="88">
+}
+                </colgroup>
+                <thead>
+                    <tr>
+                        @if (Model.ReviewMethod != TFA.Vote.Models.ReviewMethod.Vote)
+                        {
+                            <th><div align="center">打分</div></th>
+                        }
+                        else
+                        {
+                            <th><div align="center">投票</div></th>
+                        }
+                        <th><div align="center">序号</div></th>
+                        <th><div align="center">项目名称</div></th>
+                        <th><div align="center">文件内容</div></th>
+                        <th><div align="center">建筑类别</div></th>
+                        <th><div align="center">设计类别</div></th>
+                        <th><div align="center">设计时间</div></th>
+                        @if (Model.ReviewMethod != TFA.Vote.Models.ReviewMethod.Vote)
+                        {
+                            <th><div align="center">回 避</div></th>
+                        }
+                        
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var project in projects.OrderBy(o => (o.CustomData as TFA.Vote.Models.AwardProject).Sort))
+            {
+                var awardproject = project.CustomData as TFA.Vote.Models.AwardProject;
+                        <tr projectid="@project.ID">
+                            @if (Model.ReviewMethod != TFA.Vote.Models.ReviewMethod.Vote)
+                            {
+                                <td>
+                                    <dl>                                        
+                                        <dd><input type="text" class="pc_input2" name="score" value="0" readonly=""></dd>
+                                        <dd><button class="pc_button1" onClick="setvalue(this,1)"><i class="huadongjz fa-caret-up"></i></button></dd>
+                                        <dd><button class="pc_button2" onClick="setvalue(this,-1)"><i class="huadongjz fa-caret-down"></i></button></dd>
+                                    </dl>
+
+                                </td>
+                            }
+                            else
+                            {
+                                <td align="center">
+                                    <input type="checkbox" name="voteflag" lay-filter="voteflag">
+                                </td>
+                            }
+                            <td align="center">@awardproject.Sort</td>
+                            <td>@project.ProjectName</td>
+                            <td >
+                                @foreach (var attach in project.Attaches)
+                                {
+                                    <a href="#_" onclick="showPDF('@attach.FilePath');">@System.IO.Path.GetFileNameWithoutExtension(attach.FileName)@*<i class="huadongjz fa-link redlink"></i>*@</a><br/>
+                                }
+                            </td>
+                            <td align="center">@project.BuildingType</td>
+                            <td align="center">@project.DesignType</td>
+                            <td align="center">@project.DesignYear</td>
+                            @if (Model.ReviewMethod != TFA.Vote.Models.ReviewMethod.Vote)
+                            {
+                                <td>
+                                    <input type="checkbox" name="isavoid" lay-skin="switch" lay-filter="avoidSwitch">
+                                </td>
+                            }
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        </div>
+    </div>
+            @section script{
+                <script>
+    var projectdetails =@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(projectdetails));
+    var method ="@(Model.ReviewMethod==TFA.Vote.Models.ReviewMethod.Vote?"vote":"score")";
+    var requirevotenumber=@methodsetting.VoteNumber;
+    function savedata(ispublish) {
+        var projectdetail = [];
+        $("[projectid]").each(function () {
+            var detail = {
+                expertid:@expert.ID,
+                projectid: $(this).attr("projectid"),
+                isavoid: $(this).find("[name='isavoid']").prop("checked")?true:false
+            };
+            if ($(this).find("[name='score']").size() > 0) {
+                detail.score = $(this).find("[name='score']").val();
+                if (!detail.score || isNaN(detail.score)) { detail.score = 0;}
+            }
+            if ($(this).find("[name='voteflag']").size() > 0) {
+                detail.voteflag = $(this).find("[name='voteflag']").prop("checked")?true:false;
+            }
+            projectdetail.push(detail);
+        });
+        var obj = { data: JSON.stringify(projectdetail), publish: ispublish ? 1 : 0 };
+        if (ispublish) {
+            //发布的需要进行数据验证
+            var votenumber = $("tr.on").size();
+            if (method == "vote") {
+                if (votenumber != requirevotenumber) {
+                    if (votenumber + $("[name='isavoid']:checked").size() != $("[projectid]").size()) {
+                        TF.alert("请投" + requirevotenumber + "票再提交");
+                        return false;
+                    }
+                }
+            } else {
+                if (votenumber + $("[name='isavoid']:checked").size() != $("[projectid]").size()) {
+                    TF.alert("请完整打分后再提交");
+                    return false;
+                }
+            }
+        }
+        TF.loading("正在提交,请稍候...");
+        TF.ajaxDo("/Expert/Review?detailid=@Model.ID", TF.ajaxDone, { data: $.param(obj) });
+    }
+    function confirmsave() {
+        layer.confirm('您完成评审了吗？提交后将无法再修改评审结果。', function (index) {
+            layer.close(index);
+            savedata(true);
+        });
+    }
+    $(function () {
+        $.each(projectdetails, function (i, v) {
+            var tr = $("tr[projectid=" + v.ProjectID + "]");
+            if (v.IsAvoid) {
+                tr.find("[name='isavoid']").attr("checked", v.IsAvoid);
+                tr.find(".layui-form-switch").addClass("layui-form-onswitch");
+                tr.find("[name='score']").val('').prop("disabled", true);
+                tr.find(".updownbtn").prop("disabled", true).addClass("layui-btn-disabled");
+            }
+
+            if (tr.find("[name='score']").size() > 0) {
+                tr.find("[name='score']").val(v.Score);
+                if (v.Score > 0 && !v.IsAvoid) { tr.addClass("on");}
+            }
+            if (tr.find("[name='voteflag']").size() > 0) {
+                if (v.VoteFlag) {
+                    tr.find("[name='voteflag']").attr("checked", v.VoteFlag);
+                    tr.find(".layui-form-checkbox").addClass("layui-form-checked");
+                    tr.addClass("on");
+                }
+
+            }
+        });
+                    layui.form.on('switch(avoidSwitch)', function (data) {
+            var tr = $(this).closest("tr");
+                    if (this.checked) {
+                        tr.addClass("none");
+                tr.find("[name='score']").val('').prop("readonly", true);
+                    tr.removeClass("on");
+                    } else {
+                        tr.removeClass("none");
+                        tr.find("[name='score']").val(0).prop("readonly", false);
+            }
+        });
+        layui.form.on('checkbox(voteflag)', function (data) {
+            var tr = $(this).closest("tr");
+            if (this.checked) {
+                //判断是否超出投票数量
+                var votecount = $("tr.on").size();
+                if (votecount >= requirevotenumber) {
+                    layer.alert("最多只能投" + requirevotenumber + "票");
+                    $(this).attr("checked", false);
+                    $(this).next(".layui-form-checkbox").removeClass("layui-form-checked");
+                    return false;
+                }
+                    tr.addClass("on");
+            } else {
+                tr.removeClass("on");
+            }
+        });
+    })
+    //打分
+                    function setvalue(obj, val) {
+                        if ($(obj).closest("tr").is(".none")) {
+                            return false;
+                        }
+        var minscore =@methodsetting.MinScore;
+        var maxscore =@methodsetting.MaxScore;
+        var step =@methodsetting.ScoreStep;
+        var input = $(obj).closest("tr").find("[name='score']");
+
+                    var newval = input.val();
+                    if (!newval || newval == 0) { newval = val == 1 ? minscore : maxscore; }
+        else {
+            newval =parseFloat( newval) +parseFloat( val * step);
+        }
+        if (newval > maxscore) { newval = maxscore; }
+        if (newval < minscore) { newval = minscore; }
+        input.val(Math.round(newval*10)/10);
+                    $(obj).closest("tr").addClass("on");
+    }
+                </script>
+            }

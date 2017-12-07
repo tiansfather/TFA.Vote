@@ -1,0 +1,89 @@
+﻿@{
+    Layout = null;
+    var designYears = ViewData["designYears"] as List<string>;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <script src="/Resource/JS/jquery-1.7.1.min.js"></script>
+    <script src="/Resource/JS/global.js"></script>
+    <link href="/Resource/CSS/style.css" type="text/css" rel="stylesheet" />
+    <link href="/Resource/layui/css/layui.css" rel="stylesheet" />
+</head>
+<body style="padding:15px;">
+    <div id="form">
+        <form class="searchForm">
+            <table width="850" class="formtable minitd" cellpadding="2" cellspacing="2">
+                <tr>
+                    <td width="15%" class="tdleft_even"><span class="text">项目名称:</span></td>
+                    <td width="25%" class="tdright"><input class="input" type="text" value="" style="width:150px" name="projectname"></td>
+                    <td width="15%" class="tdleft_even"><span class="text">设计时间:</span></td>
+                    <td width="30%" class="tdright">
+                        <select class="input" style="width:150px" name="designyear">
+                            <option value="">--请选择--</option>
+                            @foreach (var year in designYears)
+                            {
+                                <option value="@year">@year</option>
+                            }
+                        </select>
+                    </td>
+                    <td style="border:0"></td>
+                </tr>
+                <tr>
+                    <td width="15%" class="tdleft_even"><span class="text">设计单位:</span></td>
+                    <td class="tdright" ><input class="input" type="text" value="" style="width:150px" name="designcompany"></td>
+                    <td width="15%" class="tdleft_even"><span class="text">导入特征:</span></td>
+                    <td width="25%" class="tdright"><select class="input" style="width:80px" name="i_designyear">
+    <option value="">--请选择--</option>
+    @for (var i = 2017; i <= 2021; i++)
+    {
+        <option value="@i">@i</option>
+    }
+</select>
+<input class="input" type="text" value="" style="width:120px" name="i_tag" placeholder="请填写批次标签">
+                    </td>
+                    <td style="border:0"><input type="button" class="input button" value="查询" style="width:100px" onclick="loadData()" /></td>
+                </tr>
+            </table>
+        </form>
+    </div>
+    <div style="margin-top:15px;">
+        <table class="layui-table" lay-data="{limit:1000,height:'full-165', url:'/data/projects?exclude=@(Request.QueryString["exclude"])', id:'projectlist'}" lay-filter="projectlist">
+            <thead>
+                <tr>
+                    <th lay-data="{checkbox:true,fixed:'left'}"></th>
+                    <th lay-data="{field:'Tag', width:100}">导入特征</th>
+                    <th lay-data="{field:'ProjectName', width:220,}">项目名称</th>
+                    @*<th lay-data="{field:'BuildingCompany', width:220}">建筑单位</th>*@
+                    <th lay-data="{field:'BuildingType', width:120}">建筑类别</th>
+                    <th lay-data="{field:'DesignCompany', width:220}">设计单位</th>
+                    <th lay-data="{field:'DesignType', width:120}">设计类别</th>
+                    <th lay-data="{field:'DesignYear', width:120}">设计时间</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+    <div style="text-align:center">
+        <input type="button" class="input button" value="确定" style="width:100px" onclick="docallback()" />
+    </div>
+    <script src="/Resource/layui/layui.all.js"></script>
+    <script>
+        var table = layui.table;
+        var cb=parent.@Request.QueryString["cb"];
+        function loadData() {
+            var where = $("form.searchForm").serializeObj();
+            table.reload('projectlist', { where: where });
+        }
+
+        function docallback() {
+            var data = table.checkStatus('projectlist').data;
+            cb(data);
+        }
+    </script>
+
+</body>
+</html>

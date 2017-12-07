@@ -1,0 +1,41 @@
+﻿@model TFA.Vote.Models.Project
+    @{ 
+        var attachmode = ViewData["AttachMode"].ToString();
+    }
+<table class="layui-table center" style="width:600px">
+    <thead>
+        <tr>
+            <th>文件名</th>
+            <th>上传日期</th>
+            <th>文件大小</th>
+            @if (attachmode == "Set")
+            {
+                <th>操作</th>
+            }
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var attach in Model.Attaches)
+        {
+            <tr>
+                <td><a style="color:blue;text-decoration:underline" href="#_" onclick="showPDF('@attach.FilePath');">@(System.IO.Path.GetFileNameWithoutExtension(attach.FileName))</a></td>
+                <td>@attach.CreateTime.ToString("yyyy-MM-dd")</td>
+                <td>@attach.FileSizeStr</td>
+                @if (attachmode == "Set")
+                {
+                    <td>
+                        <a class="layui-btn layui-btn-danger layui-btn-mini" onclick="delAttach(@attach.ID)">删除</a>
+                    </td>
+                }
+            </tr>
+        }
+    </tbody>
+</table>
+<script>
+    function delAttach(id) {
+        layer.confirm('确认删除此项目附件?此操作无法恢复', function (index) {
+            TF.ajaxDo("/Manager/ProjectManager_DelAttach?id=" + id);
+        });
+        
+    }
+</script>

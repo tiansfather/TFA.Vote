@@ -1,0 +1,143 @@
+﻿@model TFA.Vote.Models.ReviewDetail
+@{
+    ViewBag.Title = "ReviewManager_ViewEdit";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var review = TFA.Vote.Config.Helper.SingleById<TFA.Vote.Models.Review>(Model.ReviewID);
+    var votedetails = Model.VoteDetails;
+    //已投票专家数
+    var votedExpertCount = Model.VoteDetails.Where(o => o.FinishTime != null).Count();
+    //专家投票详情
+    var expertvotedetails=review.Award.Experts.OrderBy(o => o.RealName).Select(o =>
+    {
+        var expertvote = votedetails.SingleOrDefault(v => v.ExpertID == o.ID);
+        var finishtime = "";
+        if (expertvote != null && expertvote.FinishTime!=null)
+        {
+            finishtime = Convert.ToDateTime(expertvote.FinishTime).ToString("yyyy-MM-dd HH:mm");
+        }
+        return new { o.RealName, o.UserName ,FinishTime=finishtime};
+    });
+}
+
+<div id="nav">
+    <span>评审活动管理</span>
+    <input type="button" class="input button" value="返回" style="width:100px;float:right;margin-left:15px;" onclick="history.back(-1);" />
+    <input type="button" class="input button" value="撤回评审" style="width:100px;float:right;margin-left:15px;" onclick="withdraw();" />
+</div>
+<h1 style="font-size:18px;font-weight:bold;margin:10px;">当前状态：专家评审中(@votedExpertCount/@(review.Award.ExpertCount))</h1>
+<div id="form">
+    <form class="searchForm">
+        <input type="hidden" name="id" value="@Model.ID" />
+        <table width="800" class="formtable" cellpadding="2" cellspacing="2">
+            <tr>
+                <td width="30%" class="tdleft_even"><span class="text">奖项:</span></td>
+                <td width="50%" class="tdright">@review.Award.AwardName</td>
+
+            </tr>
+            <tr>
+                <td width="30%" class="tdleft_even"><span class="text">评审活动说明:</span></td>
+                <td width="50%" class="tdright">@review.ReviewName</td>
+            </tr>
+            <tr>
+                <td width="30%" class="tdleft_even"><span class="text">评审轮次:</span></td>
+                <td width="50%" class="tdright">第@(Model.RoundC)轮第@(Model.Turn)次</td>
+            </tr>
+            <tr>
+                <td width="30%" class="tdleft_even"><span class="text">目标数量:</span></td>
+                <td width="50%" class="tdright">@Model.TargetNumber</td>
+            </tr>
+            <tr>
+                <td width="30%" class="tdleft_even"><span class="text">评审方法:</span></td>
+                <td width="50%" class="tdright">@(EnumExtend<TFA.Vote.Models.ReviewMethod>.GetEnumName(Model.ReviewMethod))</td>
+            </tr>
+            <tr>
+                <td width="30%" class="tdleft_even"><span class="text">参数设定:</span></td>
+                <td width="50%" class="tdright">
+                    <label id="methodsetting1" style="display:none">
+                        分制:  @Model.ReviewMethodSetting.MaxScore
+                        最低:  @Model.ReviewMethodSetting.MinScore
+                        步进:  @Model.ReviewMethodSetting.ScoreStep
+                        @if (Model.ReviewMethodSetting.CutOff) { <span>去掉最高分最低分</span>}
+                    </label>
+                    <label id="methodsetting2" style="display:none">
+                        上轮权重:  @(Model.ReviewMethodSetting.WeightLast)%
+                        本轮权重:  @(Model.ReviewMethodSetting.WeightNow)%
+                    </label>
+                    <label id="methodsetting3" style="display:none">
+                        每位评委投满:  @(Model.ReviewMethodSetting.VoteNumber)票
+                    </label>
+                </td>
+            </tr>
+        </table>
+    </form>
+</div>
+<label style="font-weight: bold; margin: 5px 0;">专家评审情况:</label>
+<input type="button" class="input button" value="刷新" style="width:100px;margin-left:15px;" onclick="location.reload()" />
+
+<table class="layui-table center">
+    <colgroup>
+        <col width="150">
+        <col width="150">
+        <col width="150">
+        <col width="150">
+    </colgroup>
+    <thead>
+        <tr>
+            <th>专家姓名</th>
+            <th>登录帐号</th>
+            <th>提交情况</th>
+            <th>提交时间</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach(var expertvote in expertvotedetails)
+        {
+            <tr>
+                <td>@expertvote.RealName</td>
+                <td>@expertvote.UserName</td>
+                <td>
+                    @if (expertvote.FinishTime == "")
+                    {
+                        <span style="color:red">未提交</span>
+                    }
+                    else
+                    {
+                        <span style="color:green">已提交</span>
+                    }
+                </td>
+                <td>@expertvote.FinishTime</td>
+            </tr>
+        }
+        </tbody>
+</table>
+
+        @section script{
+            <script>
+        $(function () {
+            initMethodSetting("@(Convert.ToInt32(Model.ReviewMethod))");
+
+            function initMethodSetting(methodsetting) {
+                $("#methodsetting1,#methodsetting2,#methodsetting3").hide();
+                switch (methodsetting) {
+                    case "1":
+                        $("#methodsetting1").show();
+                        break;
+                    case "2":
+                        $("#methodsetting1,#methodsetting2").show();
+                        break;
+                    case "3":
+                        $("#methodsetting3").show();
+                        break;
+                }
+            }
+
+        })
+                function withdraw() {
+                    layer.confirm('确认撤回此评审?', function (index) {
+                        layer.close(index);
+                        TF.ajaxDo("/Manager/ReviewManager_WithDraw?detailid=@Model.ID", TF.ajaxDone);
+                    });
+                }
+            </script>
+        }

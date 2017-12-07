@@ -1,0 +1,30 @@
+﻿@{
+    ViewBag.Title = "PDF";
+    var path = ViewData["path"] as string;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>在线预览PDF文档</title>
+
+    <script src="/Resource/JS/jquery-1.8.0.min.js"></script>
+    <script src="/Resource/JS/jquery.media.js"></script>
+    <script type="text/javascript">
+
+        $(function () {
+            setTimeout(function () {
+                $('a.media').media({ width: $(window).width() - 100, height: $(window).height() - 50 });
+            }, 500);
+        
+    });
+    </script>
+
+</head>
+<body>
+    <center>
+        <a class="media" href="@path"></a>
+    </center>
+</body>
+</html>

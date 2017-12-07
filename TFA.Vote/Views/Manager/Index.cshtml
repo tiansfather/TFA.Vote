@@ -1,0 +1,26 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .box{
+        width:200px;height:90px;
+        margin-left:20px;
+        float:left;
+        border-radius:15px;
+        border:1px solid #ccc;
+        line-height:90px;
+        text-align:center;
+        box-shadow:#ccc 10px 10px;
+    }
+    .box a{
+        display:block;
+        height:90px;
+    }
+</style>
+<div style="padding-top:30px;">
+    <div class="box"><a href="/Manager/ExpertManager_List">专家账号管理</a></div>
+    <div class="box"><a href="/Manager/AwardManager_List">奖项管理</a></div>
+    <div class="box"><a href="/Manager/ReviewManager_List">评审活动管理</a></div>
+    <div class="box"><a href="/Manager/ProjectManager_List">项目数据管理</a></div>
+</div>

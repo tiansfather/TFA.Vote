@@ -1,0 +1,73 @@
+﻿@{
+    ViewBag.Title = "Login";
+}
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>系统登录</title>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <script src="/Resource/JS/jquery-1.7.1.min.js"></script>
+    <script src="/Resource/layer/layer.js"></script>
+    <script src="/Resource/JS/global.js"></script>
+    <link href="/Resource/CSS/style.css" type="text/css" rel="stylesheet" />
+    <style>
+        #container span.text {
+            font-weight: bold;
+        }
+
+        #container {
+            width: 100%
+        }
+    </style>
+</head>
+<body>
+    <div id="base" class="">
+        <div id="head">
+            <div id="head_left"></div>
+            <div id="head_right">
+                <div id="headtext">
+                    <p><a>@Config.SoftTitle</a></p>
+                </div>
+            </div>
+        </div>
+        <div >
+            <form>
+                <div style="width:430px;margin:100px auto 0px auto;border:1px solid #797979;border-radius:5px;">
+                    <h3 style="background:#999999;font-size:13px;line-height:40px;text-align:center;color:#fff;">系统登录</h3>
+                    <div>
+                        <table width="100%" cellspacing="0" cellpadding="0">
+                            <tr>
+                                <td width="30%" align="right" height="50"><span class="text" style="font-weight:bold">用户名:</span></td>
+                                <td width="70%" align="center"><input class="input" type="text" value="" style="width:200px" name="username" id="username"></td>
+                            </tr>
+                            <tr>
+                                <td width="30%" align="right" height="50"><span class="text" style="font-weight:bold">密码:</span></td>
+                                <td width="70%" align="center"><input class="input" type="password" value="" style="width:200px" name="password" id="password"></td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" align="center" style="padding:20px"><input type="submit" class="input button" value="登录" style="width:100px" onclick="return login();"></td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <script>
+          function login() {
+              var username = $("#username").val();
+              var password = $("#password").val();
+              if (!username || !password) {
+                  TF.alert("请输入用户名和密码");
+              } else {
+                  TF.loading();
+                  TF.ajaxDo("/Account/Login?username=" + username + "&password=" + password , TF.ajaxDone);
+              }
+              return false;
+          }
+    </script>
+</body>
+</html>
+

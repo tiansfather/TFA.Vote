@@ -1,0 +1,72 @@
+﻿@model TFA.Vote.Models.Project
+@{
+    Layout = null;
+    ViewBag.Title = "ProjectManager_View";
+    ViewData["AttachMode"] = "Set";//设置附件处理模式
+}
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <script src="/Resource/JS/jquery-1.7.1.min.js"></script>
+
+    <script src="/Resource/JS/global.js"></script>
+    <link href="/Resource/CSS/style.css" type="text/css" rel="stylesheet" />
+    <link href="/Resource/layui/css/layui.css" rel="stylesheet" />
+    <style>
+        .header {
+            font-weight: bold;
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body style="padding:15px;">
+    <style>
+        .bold {
+            font-weight: bold !important;
+        }
+    </style>
+    @*<div id="nav">
+        <span>项目数据管理</span>
+        <input type="button" class="input button" value="返回" style="width:100px;float:right;" onclick="history.back(-1);" />
+    </div>*@
+    <div style="overflow:auto;">
+        <h2 class="header">附件:</h2>
+        <div style="width:600px;float:left">
+            @Html.Partial("_ProjectAttach", Model, ViewData)
+        </div>
+
+        <div style="width:120px;float:left;padding:20px;">
+            <input type="button" class="input button" value="上传附件" style="width:100px;" id="uploadbtn" />
+        </div>
+    </div>
+    <div>
+        <h2 class="header">基本信息:</h2>
+
+        @Html.Partial("_ProjectDetail", Model)
+    </div>
+    <script src="/Resource/layui/layui.all.js"></script>
+    <script>
+        //上传
+        layui.upload.render({
+            elem: '#uploadbtn'
+            , url: '/data/upload/'
+            , accept: 'file' //普通文件
+            , exts: 'pdf' //只允许上传压缩文件
+            , before: function (obj) { //obj参数包含的信息，跟 choose回调完全一致，可参见上文。
+                TF.loading("正在上传，请稍候...");
+            }
+            , done: function (res, index, upload) {
+                layer.closeAll(); //关闭loading
+                TF.ajaxDo("/Manager/ProjectManager_Attach?projectid=@Model.ID&path=" + res.item.path + "&filename=" + res.item.filename);
+            }
+            , error: function (index, upload) {
+                layer.closeAll(); //关闭loading
+            }
+        });
+    </script>
+</body>
+</html>
+
+

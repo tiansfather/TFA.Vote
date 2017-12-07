@@ -1,0 +1,73 @@
+﻿@model TFA.Vote.Models.Review
+@{
+    ViewBag.Title = "ReviewManager_Summary";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .reviewbox{
+        width:500px;
+        height:40px;
+        border:1px solid #808080;
+        line-height:40px;
+        padding:0 25px;
+        cursor:pointer;
+    }
+    .reviewbox.next{
+        margin-left:40px;
+    }
+    .BeforePublish {
+        background:#ccc;
+    }
+    .Reviewing {
+        background: rgba(245, 207, 244, 0.75);
+    }
+    .Reviewed{
+        /*background:#4cff00;*/
+    }
+    .inset {
+        float: left;
+        width: 20px;
+        height: 40px;
+        border-left: 1px solid #ccc;
+        border-bottom: 1px solid #ccc;
+        transform: translate(20px,-20px);
+        -webkit-transform: translate(20px,-20px);
+        -moz-transform: translate(20px,-20px);
+    }
+</style>
+<div id="nav">
+    <span>评审活动管理</span>
+    <input type="button" class="input button" value="返回活动列表" style="width:100px;float:right;margin-left:15px;" onclick="location.href='/Manager/ReviewManager_List'" />
+    
+</div>
+<h1 style="font-size:18px">@Model.Award.AwardName</h1>
+<div style="padding:20px;">
+    @foreach (var reviewdetail in Model.ReviewDetails)
+    {
+        <div style="overflow:auto;padding-top: 20px">
+            @if (reviewdetail.Turn > 1)
+            {
+                @*<div class="inset"></div>*@
+            }
+            <div class="reviewbox @(reviewdetail.ReviewStatus) @(reviewdetail.Turn>1?"next":"")" onclick="location.href='/Manager/ReviewManager_View?detailid=@reviewdetail.ID'">
+                <span>第@(reviewdetail.RoundC)轮 第@(reviewdetail.Turn)次评审</span>
+                <span style="margin-left:70px;">@(reviewdetail.SourceProjectIDs.Split(',').Length) 进 @(reviewdetail.TargetNumber)</span>
+                <span style="float:right">
+                    @switch (reviewdetail.ReviewStatus)
+                {
+                    case TFA.Vote.Models.ReviewStatus.BeforePublish:
+                            <span>未发布</span>
+                            break;
+                        case TFA.Vote.Models.ReviewStatus.Reviewing:
+                            <span style="color:red">评审中</span>
+                            break;
+                        case TFA.Vote.Models.ReviewStatus.Reviewed:
+                            <span style="color:green">已评审</span>
+                            break;
+                    }
+                </span>
+
+            </div>
+        </div>
+    }
+</div>

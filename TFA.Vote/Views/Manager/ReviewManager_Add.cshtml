@@ -1,0 +1,158 @@
+﻿@{
+    ViewBag.Title = "ReviewManager_Add";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var awardlist = ViewData["awardlist"] as List<TFA.Vote.Models.Award>;
+}
+
+<div id="nav">
+    <span>评审活动管理</span>
+    <input type="button" class="input button" value="返回活动列表" style="width:100px;float:right;margin-left:15px;" onclick="location.href='/Manager/ReviewManager_List'" />    
+    <input type="button" class="input button" value="发布" style="width:100px;float:right;margin-left:15px;" onclick="savedata(true);" />
+    <input type="button" class="input button" value="保存" style="width:100px;float:right;margin-left:15px;" onclick="savedata();" />
+</div>
+<div id="form">
+    <form class="searchForm">
+        <table width="800" class="formtable" cellpadding="2" cellspacing="2">
+            <tr>
+                <td width="30%" class="tdleft_even"><span class="text">奖项:</span></td>
+                <td width="50%" class="tdright"><select class="input" style="width:250px" name="awardid" onchange="loadProject()">
+    <option value="">--请选择--</option>
+    @foreach (var award in awardlist)
+    {
+        <option value="@award.ID">@award.AwardName</option>
+    }
+</select></td>
+
+            </tr>
+            <tr>
+                <td width="30%" class="tdleft_even"><span class="text">评审活动说明:</span></td>
+                <td width="50%" class="tdright"><input class="input" type="text" value="" style="width:250px" name="reviewname"></td>
+            </tr>
+            <tr>
+                <td width="30%" class="tdleft_even"><span class="text">评审轮次:</span></td>
+                <td width="50%" class="tdright">第一轮第1次</td>
+            </tr>
+            <tr>
+                <td width="30%" class="tdleft_even"><span class="text">目标数量:</span></td>
+                <td width="50%" class="tdright"><input class="input" type="text" value="" style="width:100px" name="targetnumber"></td>
+            </tr>
+            <tr>
+                <td width="30%" class="tdleft_even"><span class="text">评审方法:</span></td>
+                <td width="50%" class="tdright">
+                    <label style="width:120px;display:inline-block"><input type="radio" name="reviewmethod" value="1" checked/>本轮平均分</label>
+                    <label style="width:120px;display:none"><input type="radio" name="reviewmethod" value="2" />与上轮平均分</label>
+                    <label style="width:120px;display:inline-block"><input type="radio" name="reviewmethod" value="3" />投票</label>
+                </td>
+            </tr>
+            <tr>
+                <td width="30%" class="tdleft_even"><span class="text">参数设定:</span></td>
+                <td width="50%" class="tdright">
+                    <label id="methodsetting1" >
+                        分制<input type="text" class="input" name="maxscore" value="10" style="width:40px"/>
+                        最低<input type="text" class="input" name="minscore" value="5" style="width:40px" />
+                        步进<input type="text" class="input" name="scorestep" value="0.5" style="width:40px" />
+                        <label><input type="checkbox" name="cutoff" value="true"/>去掉最高分最低分</label>
+                    </label>
+                    <label id="methodsetting2" style="display:none">
+                        上轮权重<input type="text" class="input" name="weightlast" value="50" style="width:40px" />%
+                        本轮权重<input type="text" class="input" name="weightnow" value="50" style="width:40px" />%
+                    </label>
+                    <label id="methodsetting3" style="display:none">
+                        每位评委投满<input type="text" class="input" name="votenumber" value="5" style="width:60px" />票
+                    </label>
+                </td>
+            </tr>
+        </table>
+    </form>
+</div>
+<label style="font-weight: bold; margin: 5px 0;">参选项目:</label>
+<input type="button" class="input button" value="导出至Excel" style="width:100px;margin-left:15px;" onclick="exportProject();" />
+
+<table id="projectlist" lay-filter="projectlist"></table>
+<script type="text/html" id="projectTpl">
+    <a href="#_" style="color:blue;text-decoration:underline" onclick="showProject({{d.ID}})">{{d.ProjectName}}</a>
+</script>
+<script type="text/html" id="excludeTpl">
+    <a class="layui-btn layui-btn-mini showexclude" lay-event="showexclude" ajaxurl="/Show/ExcludeExperts?ids={{d.ExcludeExpertIDs?d.ExcludeExpertIDs:""}}">查看[{{d.ExcludeExpertIDs?d.ExcludeExpertIDs.split(',').length:0}}]</a>
+</script>
+@section script{
+    <script>
+        $(function () {
+            $("input[name='reviewmethod']").click(function () {
+                var methodsetting = $(this).val();
+                initMethodSetting(methodsetting);
+            })
+        })
+        function initMethodSetting(methodsetting) {
+            $("#methodsetting1,#methodsetting2,#methodsetting3").hide();
+            switch (methodsetting) {
+                case "1":
+                    $("#methodsetting1").show();
+                    break;
+                case "2":
+                    $("#methodsetting1,#methodsetting2").show();
+                    break;
+                case "3":
+                    $("#methodsetting3").show();
+                    break;
+            }
+        }
+        function savedata(ispublish) {
+            var data = $("form").serializeObj();
+            data["publish"] = ispublish ? "1" : "0";
+            TF.ajaxDo("/Manager/ReviewManager_Add", TF.ajaxDone, { data: $.param(data) });
+        }
+        function loadProject() {
+            var awardid = $("select[name='awardid']").val();
+            if (!awardid) { awardid = 0; }
+            layui.table.render({
+                elem: '#projectlist'
+                , url:'/data/awardprojects?awardid='+awardid
+                , height: 'full-415'
+                , cols: [[
+                    { align: 'center',field: 'Sort', title: '序号', width: 60, fixed: 'left' }
+                    , { align: 'center', title: '回避专家', width: 100, templet: '#excludeTpl'}
+                    , { align: 'center', field: 'ProjectName', title: '项目名称', width: 200, templet: '#projectTpl' }
+                    //, { align: 'center',field: 'BuildingCompany', title: '建设单位', width: 200 }
+                    , { align: 'center', field: 'BuildingType', title: '建筑类别', width: 100 }
+                    , { align: 'center', field: 'DesignCompany', title: '设计单位', width: 200 }
+                    , { align: 'center', field: 'DesignYear', title: '设计时间', width: 120 }
+                    , { align: 'center', field: 'BaseScore', title: '基础分', width: 120 }
+                ]]
+                , page: true
+                , done: function (res, curr, count) {
+                    $(".showexclude").powerFloat({
+                        targetMode: "ajax",
+                        target: function () {
+                            return $(this).attr("ajaxurl");
+                        },
+                        hoverHold: false,
+                        position: "6-8"
+                    });
+                }
+            });
+        }
+        function showProject(id) {
+            layer.open({
+                type: 2,
+                title: '项目详情',
+                closeBtn: 1,
+                area: ['850px', '500px'],
+                shadeClose: false,
+                content: "/Show/Project?id=" + id
+            });
+        }
+        function exportProject() {
+            var awardid = $("select[name='awardid']").val();
+            if (awardid) {
+                TF.loading("正在导出,请稍候");
+                TF.ajaxDo("/Export/Project?awardid=" + awardid, function (obj) {
+                    var filepath = obj.filepath;
+                    layer.closeAll();
+                    _hidden.location.href = '/Export/File?path=' + filepath;
+                });
+                
+            }
+        }
+    </script>
+    }

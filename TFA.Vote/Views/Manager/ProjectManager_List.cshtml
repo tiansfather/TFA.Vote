@@ -1,0 +1,187 @@
+﻿@{
+    ViewBag.Title = "ProjectManager_List";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var designYears = ViewData["designYears"] as List<string>;
+}
+
+<div id="framewrapper">
+    <div id="mainframe">
+        <div id="nav">
+            <span>项目数据管理</span>
+        </div>
+        <div id="form">
+            <form class="searchForm">
+                <table width="1000" class="formtable minitd" cellpadding="2" cellspacing="2">
+                    <tr>
+                        <td width="15%" class="tdleft_even"><span class="text">项目名称:</span></td>
+                        <td width="25%" class="tdright"><input class="input" type="text" value="" style="width:150px" name="projectname"></td>
+                        <td width="15%" class="tdleft_even"><span class="text">设计时间:</span></td>
+                        <td width="25%" class="tdright">
+                            <select class="input" style="width:150px" name="designyear">
+                                <option value="">--请选择--</option>
+                                @foreach (var year in designYears)
+                                {
+                                    <option value="@year">@year</option>
+                                }
+                            </select>
+                        </td>
+                        <td style="border:0"></td>
+                    </tr>
+                    <tr>
+                        <td width="15%" class="tdleft_even"><span class="text">设计单位:</span></td>
+                        <td class="tdright"><input class="input" type="text" value="" style="width:150px" name="designcompany"></td>
+                        <td width="15%" class="tdleft_even"><span class="text">导入特征:</span></td>
+                        <td width="25%" class="tdright">
+                            <select class="input" style="width:80px" name="i_designyear">
+                                <option value="">--请选择--</option>
+                                @for (var i = 2017; i <= 2021; i++)
+                                {
+                                    <option value="@i">@i</option>
+                                }
+                            </select>
+                            <input class="input" type="text" value="" style="width:120px" name="i_tag" placeholder="请填写批次标签">
+                        </td>
+                        <td style="border:0"><input type="button" class="input button" value="查询" style="width:100px" onclick="loadData()" /></td>
+                    </tr>
+                </table>
+            </form>
+            <ul style="margin-top:15px;">
+
+                <li>
+                    <select class="input" style="width:80px" name="import_designyear">
+                        <option value="">--请选择--</option>
+                        @for (var i = 2017; i <= 2021; i++)
+                        {
+                            <option value="@i">@i</option>
+                        }
+                    </select>
+                    <input type="button" style="display:none" id="uploadbtn" />
+                    <input class="input" type="text" value="" style="width:120px" name="import_tag" placeholder="请填写批次标签"><input type="button" class="input button" value="导入项目数据" style="width:100px;margin-left:10px;" onclick="importproject()">
+                </li>
+            </ul>
+        </div>
+        <div style="margin-top:15px;">
+            <table class="layui-table" lay-data="{height:'full-300', url:'/data/projects/', page:true,id:'projectlist'}" lay-filter="projectlist">
+                <thead>
+                    <tr>
+                        <th lay-data="{field:'Tag', width:100}">导入特征</th>
+                        <th lay-data="{field:'ProjectName', width:220,templet:'#projectTpl',sort:true}">项目名称</th>
+                        <th lay-data="{field:'AttachNumbers',align:'center', width:100,templet:'#attachTpl'}">附件数量</th>
+                        @*<th lay-data="{field:'BuildingCompany', width:220}">建筑单位</th>*@
+                        <th lay-data="{field:'BuildingType', width:120,sort:true}">建筑类别</th>
+                        <th lay-data="{field:'DesignCompany', width:220}">设计单位</th>
+                        <th lay-data="{field:'DesignYear', width:120,sort:true}">设计时间</th>
+                        <th lay-data="{width:100, align:'center', toolbar: '#btnTpl',fixed:'right'}">操作</th>
+                    </tr>
+                </thead>
+            </table>
+            <script type="text/html" id="attachTpl">
+                {{#  if(d.AttachNumbers==0){ }}
+                <span style="color: red;">0</span>
+                {{#  } else { }}
+                <span style="color: green;">{{d.AttachNumbers}}</span>
+                {{#  } }}
+            </script>
+            <script type="text/html" id="projectTpl">
+                <a href="#_" style="color:blue;text-decoration:underline" onclick="viewProject({{d.ID}});return false;">{{d.ProjectName}}</a>
+            </script>
+            <script type="text/html" id="btnTpl">
+                <a class="layui-btn layui-btn-danger layui-btn-mini" lay-event="del">删除</a>
+            </script>
+        </div>
+    </div>
+    <div id="viewframe"></div>
+</div>
+
+@section script{
+
+    <script>
+        var table = layui.table;
+        var upload = layui.upload;
+         function loadData() {
+             var where = $("form.searchForm").serializeObj();
+             table.reload('projectlist', {where:where});
+        }
+         function viewProject(projectid) {
+             var index=layer.open({
+                 type: 2,
+                 title: '项目详情',
+                 closeBtn: 1,
+                 area: ['850px', '500px'],
+                 shadeClose: false,
+                 content: "/Manager/ProjectManager_ViewFrame?id=" + projectid
+             });
+             //layer.full(index);
+         }
+         function importproject() {
+             //检测数据有效性
+             var i_designyear = $("select[name='import_designyear']").val();
+             var i_tag = $("input[name='import_tag']").val();
+             if (!i_designyear || !i_tag) {
+                 TF.alert("请正确填写导入特征");
+                 return false;
+             }
+
+             TF.loading("正在检测导入特征有效性...");
+
+             TF.ajaxDo("/Manager/ProjectManager_CheckTag?tag=" + (i_designyear + '-' + i_tag), function (json) {
+                 if (json.errCode == TF.Code.OK) {
+                     layer.closeAll();
+                     $("#uploadbtn").trigger("click");
+                 } else {
+                     TF.alert("年份+批次标签已存在，请调整后再导入");
+                 }
+             }, {async:false});
+
+         }
+         $(function () {
+             //上传
+             upload.render({
+                 elem: '#uploadbtn'
+                 , url: '/data/upload/'
+                 , accept: 'file' //普通文件
+                 , exts: 'xls|xlsx' //只允许上传压缩文件
+                 , before: function (obj) { //obj参数包含的信息，跟 choose回调完全一致，可参见上文。
+                     TF.loading("正在上传，请稍候...");
+                 }
+                 , done: function (res, index, upload) {
+                     layer.closeAll(); //关闭loading
+                     TF.loading("正在导入，请稍候...");
+                     var path = res.item.path;
+                     var i_designyear = $("select[name='import_designyear']").val();
+                     var i_tag = $("input[name='import_tag']").val();
+                     var tag = i_designyear + '-' + i_tag;
+                     TF.ajaxDo("/Manager/ProjectManager_Import?tag=" + tag + "&path=" + path);
+                 }
+                 , error: function (index, upload) {
+                     layer.closeAll(); //关闭loading
+                 }
+             });
+             //监听工具条
+             table.on('tool(projectlist)', function (obj) { //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
+                 var data = obj.data; //获得当前行数据
+                 var layEvent = obj.event; //获得 lay-event 对应的值
+                 var tr = obj.tr; //获得当前行 tr 的DOM对象
+
+                 if (layEvent === 'detail') { //查看
+                     //do somehing
+                 } else if (layEvent === 'del') { //删除
+                     layer.confirm('真的删除此项目么', function (index) {
+                         TF.ajaxDo("/Manager/ProjectManager_Del?id="+data.ID, TF.ajaxDone);
+                     });
+                 }
+             });
+             table.on('sort(projectlist)', function (obj) { //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
+
+
+                 var where = $("form.searchForm").serializeObj();
+                 where["field"] = obj.field;
+                 where["order"] = obj.type;
+                 table.reload('projectlist', {
+                     initSort: obj //记录初始排序，如果不设的话，将无法标记表头的排序状态。 layui 2.1.1 新增参数
+                     , where: where
+                 });
+             });
+         })
+    </script>
+}

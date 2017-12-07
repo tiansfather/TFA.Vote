@@ -1,0 +1,87 @@
+﻿@model List<TFA.Vote.Models.ReviewVoteExpertProjectDetail>
+@{
+    Layout = null;
+    var reviewdetail = ViewData["reviewdetail"] as TFA.Vote.Models.ReviewDetail;
+    var result = Model.Select(o => {
+        var expert = Config.Helper.SingleById<TFA.Vote.Models.User>(o.ExpertID);
+        return new { expert.RealName, expert.Company, o.IsAvoid, o.Score, o.VoteFlag };
+    }).OrderBy(o=>o.RealName).ToList();
+    var basescoreStr = ViewData["basescore"].ToString();
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <script src="/Resource/JS/jquery-1.7.1.min.js"></script>
+
+    <script src="/Resource/JS/global.js"></script>
+    <link href="/Resource/CSS/style.css" type="text/css" rel="stylesheet" />
+    <link href="/Resource/layui/css/layui.css" rel="stylesheet" />
+</head>
+<body>
+    <div style="padding:0 20px;">
+        <table lay-filter="projectdetails" class="center">
+            <thead>
+                <tr>
+                    <th lay-data="{field:'realname', width:120}">专家姓名</th>
+                    <th lay-data="{field:'company', width:150}">所属单位</th>
+                    @if (reviewdetail.ReviewMethod == TFA.Vote.Models.ReviewMethod.Vote)
+                    {
+                        <th lay-data="{field:'vote', width:100}">投票</th>
+                    }
+                    else
+                    {
+                        <th lay-data="{field:'score', width:100}">打分</th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                @if (!basescoreStr.IsNullOrEmpty())
+                {
+                    <tr>
+                        <td>基础分</td>
+                        <td></td>
+                        <td> @basescoreStr</td>
+                    </tr>
+                }
+                @foreach(var detail in result)
+                {
+                    <tr>
+                        <td>@detail.RealName</td>
+                        <td>@detail.Company</td>
+                        <td>
+                            @if (detail.IsAvoid)
+                            {
+                                <span style="color:red">回避</span>
+                            }
+                            else
+                            {
+                                if (reviewdetail.ReviewMethod == TFA.Vote.Models.ReviewMethod.Vote)
+                                {
+                                    if (detail.VoteFlag)
+                                    {
+                                        <span style="color:green;font-weight:bold">Y</span>
+                                    }
+                                }
+                                else
+                                {
+                                        @detail.Score
+                                }
+                            }
+                            
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <script src="/Resource/layui/layui.all.js"></script>
+    <script>
+        layui.table.init('projectdetails', { //转化静态表格
+            height: 'full-50'
+        }); 
+    </script>
+</body>
+</html>

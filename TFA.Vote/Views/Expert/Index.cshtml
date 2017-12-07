@@ -1,0 +1,48 @@
+﻿@model List<TFA.Vote.Models.Review>
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_LayoutExpert.cshtml";
+}
+
+@if (Model.Count > 0)
+{
+    <div class="main_pc_nr">
+        <div class="main_anniu">
+            <ul>
+                @foreach (var review in Model)
+                {
+                    <a onclick="gotoReview(@review.ID)" href="#_">
+                        <li>
+                            @review.Award.AwardName<br>
+                            @Html.Raw(review.CurrentRoundTurn)<br>
+                            正在评审中...
+                        </li>
+                    </a>
+                }
+            </ul>
+        </div>
+    </div>
+}
+else
+{
+    <div class="main_pc_nr_none">
+        <div class="main_anniu_none">
+            <ul>
+                <li><i class="huadongjz fa-exclamation-triangle"></i></li>
+                <li>当前没有正在进行的评审！</li>
+            </ul>
+        </div>
+    </div>
+}
+
+
+@section script{
+    <script>
+        $(function () {
+            $("body").addClass("main_pc_bj");
+        })
+        function gotoReview(reviewid) {
+            TF.ajaxDo("/Expert/CheckIfReviewed?id=" + reviewid, TF.ajaxDone);
+        }
+    </script>
+}

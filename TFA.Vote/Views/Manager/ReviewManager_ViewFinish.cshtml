@@ -1,0 +1,235 @@
+﻿@model TFA.Vote.Models.ReviewDetail
+@{
+    ViewBag.Title = "ReviewManager_ViewEdit";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var review = TFA.Vote.Config.Helper.SingleById<TFA.Vote.Models.Review>(Model.ReviewID);
+    var votedetails = Model.VoteDetails;
+    //已投票专家数
+    var votedExpertCount = Model.VoteDetails.Where(o => o.FinishTime != null).Count();
+    //专家投票详情
+    var expertvotedetails = review.Award.Experts.OrderBy(o => o.RealName).Select(o =>
+    {
+        var expertvote = votedetails.SingleOrDefault(v => v.ExpertID == o.ID);
+        var finishtime = "";
+        if (expertvote != null && expertvote.FinishTime != null)
+        {
+            finishtime = Convert.ToDateTime(expertvote.FinishTime).ToString("yyyy-MM-dd HH:mm");
+        }
+        return new { o.RealName, o.UserName, FinishTime = finishtime };
+    });
+    var methodsetting = Model.ReviewMethodSetting;
+    //显示的最大轮数
+    var maxshowturn = Model.Turn == 1 ? review.ReviewDetails.Where(o=>o.ReviewStatus==TFA.Vote.Models.ReviewStatus.Reviewed && o.Round==Model.Round).Max(o => o.Turn) : Model.Turn;
+}
+
+<div id="nav">
+    <span>评审活动管理</span>
+    <input type="button" class="input button" value="返回" style="width:100px;float:right;margin-left:15px;" onclick="history.back(-1);" />
+    <input type="button" class="input button" value="结果公示" style="width:100px;float:right;margin-left:15px;" onclick="showfull();" />
+</div>
+<h1 style="font-size:18px;font-weight:bold;margin:10px;">当前状态：专家评审已完成</h1>
+<div id="form">
+    <form class="searchForm">
+        <input type="hidden" name="id" value="@Model.ID" />
+        <table width="800" class="formtable" cellpadding="2" cellspacing="2">
+            <tr>
+                <td width="30%" class="tdleft_even"><span class="text">奖项:</span></td>
+                <td width="50%" class="tdright">@review.Award.AwardName</td>
+
+            </tr>
+            <tr>
+                <td width="30%" class="tdleft_even"><span class="text">评审活动说明:</span></td>
+                <td width="50%" class="tdright">@review.ReviewName</td>
+            </tr>
+            <tr>
+                <td width="30%" class="tdleft_even"><span class="text">评审轮次:</span></td>
+                <td width="50%" class="tdright">第@(Model.RoundC)轮第@(Model.Turn)次</td>
+            </tr>
+            <tr>
+                <td width="30%" class="tdleft_even"><span class="text">目标数量:</span></td>
+                <td width="50%" class="tdright">@Model.TargetNumber</td>
+            </tr>
+            <tr>
+                <td width="30%" class="tdleft_even"><span class="text">评审方法:</span></td>
+                <td width="50%" class="tdright">@(EnumExtend<TFA.Vote.Models.ReviewMethod>.GetEnumName(Model.ReviewMethod))</td>
+            </tr>
+            <tr>
+                <td width="30%" class="tdleft_even"><span class="text">参数设定:</span></td>
+                <td width="50%" class="tdright">
+                    <label id="methodsetting1" style="display:none">
+                        分制:  @Model.ReviewMethodSetting.MaxScore
+                        最低:  @Model.ReviewMethodSetting.MinScore
+                        步进:  @Model.ReviewMethodSetting.ScoreStep
+                        @if (Model.ReviewMethodSetting.CutOff)
+                        { <span>去掉最高分最低分</span>}
+                    </label>
+                    <label id="methodsetting2" style="display:none">
+                        上轮权重:  @(Model.ReviewMethodSetting.WeightLast)%
+                        本轮权重:  @(Model.ReviewMethodSetting.WeightNow)%
+                    </label>
+                    <label id="methodsetting3" style="display:none">
+                        每位评委投满:  @(Model.ReviewMethodSetting.VoteNumber)票
+                    </label>
+                </td>
+            </tr>
+        </table>
+    </form>
+</div>
+<label style="font-weight: bold; margin: 5px 0;">本轮评选结果:</label>
+@if (!review.ReviewDetails.Exists(o => o.ReviewStatus != TFA.Vote.Models.ReviewStatus.Reviewed))
+{
+    <input id="addinReviewBtn" type="button" class="input button" value="补充评审" style="width:100px;margin-left:15px;display:none" onclick="reviewAddIn()" />
+
+
+    if (Model.Turn == 1 && Model.IsLastRound)
+    {
+        <input type="button" class="input button" value="创建下一轮评审" style="width:140px;margin-left:15px;" onclick="reviewNext()" />
+    }
+}
+
+<input type="button" class="input button" value="导出至Excel" style="width:100px;margin-left:15px;" onclick="exportReview()" />
+
+<table class="layui-table"  lay-filter="projectlist" id="projectlist">
+    
+</table>
+<script type="text/html" id="projectTpl">
+    <a projectid="{{d.ID}}" href="#_" style="color:blue;text-decoration:underline" onclick="showProject({{d.ID}})" class="{{d.NeedConfirm?'confirm':''}}">{{d.ProjectName}}</a>
+</script>
+<script type="text/html" id="btnTpl">
+    <a class="layui-btn layui-btn-mini" lay-event="view">查看</a>
+</script>
+@for (var i = 2; i <= maxshowturn; i++)
+{
+    <script type="text/html" id="score@(i)">
+        {{d.SubScores[@(i-2)]}}
+    </script>
+}
+@section script{
+    <script>
+        $(function () {
+            initMethodSetting("@(Convert.ToInt32(Model.ReviewMethod))");
+
+            function initMethodSetting(methodsetting) {
+                $("#methodsetting1,#methodsetting2,#methodsetting3").hide();
+                switch (methodsetting) {
+                    case "1":
+                        $("#methodsetting1").show();
+                        break;
+                    case "2":
+                        $("#methodsetting1,#methodsetting2").show();
+                        break;
+                    case "3":
+                        $("#methodsetting3").show();
+                        break;
+                }
+            }
+            layui.table.render({
+                id:'projectlist'
+                ,elem: '#projectlist'
+                , url: '/data/reviewprojectdetail?detailid=@Model.ID'
+                , height: 'full-455'
+                , cols: [[
+                    { checkbox: true, fixed: 'left' }
+                    , { align: 'center',field: 'Rank', width: 60 ,title:'排名'}
+                    , { align: 'center',field: 'Sort', width: 60 ,title:'序号'}
+                    , { align: 'center', field: 'Score', width: 100, title: '@(Model.ReviewMethod==TFA.Vote.Models.ReviewMethod.Weighting?"加权得分":"本轮结果")' }
+                    @if (Model.ReviewMethod == TFA.Vote.Models.ReviewMethod.Weighting)
+                    {
+                       @Html.Raw(", { align: 'center',field: 'OriScore', width: 100 ,title: '本轮结果'}")
+                    }
+                    @for(var i = 2; i <= maxshowturn; i++)
+                    { @Html.Raw(",{ align: 'center', field: 'Score"+i+"', width: 100, title: '补投"+(i-1)+"' ,templet:'#score"+i+"'}")}
+                    , { align: 'center',field: 'ProjectName', width: 220, templet: '#projectTpl', title: '项目名称' }
+                    //, { align: 'center',field: 'BuildingCompany', width: 220, title: '建筑单位' }
+                    , { align: 'center',field: 'BuildingType', width: 120, title: '建筑类别' }
+                    , { align: 'center',field: 'DesignCompany', width: 220, title: '设计单位' }
+                    , { align: 'center',field: 'DesignYear', width: 100, title: '设计时间' }
+                    , { width: 100, align: 'center', toolbar: '#btnTpl', fixed: 'right', title: '评审详情' }
+                ]]
+                , done: function (res, curr, count) {
+                    $("a.confirm").closest("tr").addClass("highlight");
+                        if ($("a.confirm").size() > 0) {
+                        $("#addinReviewBtn").show();//有同分的则进行补充评审
+                        }
+                    }
+            });
+            //监听工具条
+            layui.table.on('tool(projectlist)', function (obj) { //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
+                var data = obj.data; //获得当前行数据
+                var layEvent = obj.event; //获得 lay-event 对应的值
+                var tr = obj.tr; //获得当前行 tr 的DOM对象
+                if (layEvent === 'view') { //评审明细
+                    layer.open({
+                        type: 2,
+                        title: '项目名称:'+data.ProjectName,
+                        closeBtn: 1,
+                        area: ['500px', '500px'],
+                        shadeClose: false,
+                        content: "/Show/ProjectReviewDetail?detailid=@Model.ID&projectid=" + data.ID
+                    });
+                }
+            });
+        })
+        function showProject(id) {
+            layer.open({
+                type: 2,
+                title: '项目详情',
+                closeBtn: 1,
+                area: ['850px', '500px'],
+                shadeClose: false,
+                content: "/Show/Project?id=" + id
+            });
+        }
+
+        //补充评审
+        function reviewAddIn() {
+            var ids = [];
+            $("a.confirm").each(function () {
+                ids.push($(this).attr("projectid"));
+            });
+            location.href="/Manager/ReviewManager_AddNext?projectids="+ids+"&ReviewID=@Model.ReviewID&ReviewType=AddIn"
+        }
+        //下一轮
+        function reviewNext() {
+            var checkStatus = layui.table.checkStatus('projectlist');
+            if (checkStatus.data.length == 0) {
+                TF.alert("请先选择项目");
+                return false;
+            }
+            var ids = checkStatus.data.map(function (o) { return o.ID; });
+            if (checkStatus.data.length !=@Model.TargetNumber){
+                layer.confirm('您当前选择的项目数量与目标数量不一致！您确定继续吗？如点击确定，系统将按照您选择的项目创建下一轮评审。', {
+                    btn: ['确定', '取消'] //按钮
+                }, function () {
+                    location.href = "/Manager/ReviewManager_AddNext?projectids=" + ids + "&ReviewID=@Model.ReviewID&ReviewType=Next";
+                }, function () {
+
+                });
+                return;
+            }
+
+            location.href="/Manager/ReviewManager_AddNext?projectids="+ids+"&ReviewID=@Model.ReviewID&ReviewType=Next"
+        }
+        function exportReview() {
+            TF.loading("正在导出,请稍候");
+            TF.ajaxDo("/Export/ReviewDetail?detailid=@Model.ID" , function (obj) {
+                var filepath = obj.filepath;
+                layer.closeAll();
+                _hidden.location.href = '/Export/File?path=' + filepath;
+            });
+        }
+        //全屏公示
+        function showfull() {
+            //弹出即全屏
+            var index = layer.open({
+                type: 2,
+                title:'@(review.Award.AwardName)第@(Model.RoundC)轮第@(Model.Turn)次结果公示',
+                content: '/Manager/ReviewManager_FullView?detailid=@Model.ID',
+                area: ['600px', '500px'],
+                maxmin: true
+            });
+            layer.full(index);
+        }
+    </script>
+}

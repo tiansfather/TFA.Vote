@@ -1,0 +1,103 @@
+﻿@model TFA.Vote.Models.ReviewDetail
+@{
+    ViewBag.Title = "ReviewManager_FullView";
+    var review = TFA.Vote.Config.Helper.SingleById<TFA.Vote.Models.Review>(Model.ReviewID);
+    var methodsetting = Model.ReviewMethodSetting;
+    //显示的最大轮数
+    var maxshowturn = Model.Turn == 1 ? review.ReviewDetails.Where(o => o.ReviewStatus == TFA.Vote.Models.ReviewStatus.Reviewed && o.Round == Model.Round).Max(o => o.Turn) : Model.Turn;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>@Config.SoftTitle</title>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <script src="/Resource/JS/jquery-1.7.1.min.js"></script>
+
+    <script src="/Resource/JS/global.js"></script>
+    <link href="/Resource/CSS/style.css" type="text/css" rel="stylesheet" />
+    <link href="/Resource/layui/css/layui.css" rel="stylesheet" />
+    <script src="/Resource/layui/layui.all.js"></script>
+    <style>
+        body{
+            padding:0 10px;
+        }
+        table th,table td{font-size:18px!important;}
+    </style>
+</head>
+<body>
+    <table class="layui-table" lay-filter="projectlist" id="projectlist"></table>
+    <script type="text/html" id="projectTpl">
+        <a projectid="{{d.ID}}" href="#_" style="color:blue;text-decoration:underline" onclick="showProject({{d.ID}})" class="{{d.NeedConfirm?'confirm':''}}">{{d.ProjectName}}</a>
+    </script>
+    <script type="text/html" id="btnTpl">
+        <a class="layui-btn layui-btn-mini" lay-event="view">查看</a>
+    </script>
+    @for (var i = 2; i <= maxshowturn; i++)
+    {
+        <script type="text/html" id="score@(i)">
+            {{d.SubScores[@(i - 2)]}}
+        </script>
+    }
+    <script>
+        $(function () {
+            layui.table.render({
+                id:'projectlist'
+                ,elem: '#projectlist'
+                , url: '/data/reviewprojectdetail?detailid=@Model.ID'
+                , height: 'full-50'
+                , cols: [[
+                    //{ checkbox: true, fixed: 'left' },
+                     { align: 'center',field: 'Rank', width: 80 ,title:'排名'}
+                    , { align: 'center',field: 'Sort', width: 80 ,title:'序号'}
+                    , { align: 'center', field: 'Score', width: 120, title: '@(Model.ReviewMethod==TFA.Vote.Models.ReviewMethod.Weighting?"加权得分":"本轮得分")' }
+                    @if (Model.ReviewMethod == TFA.Vote.Models.ReviewMethod.Weighting)
+                    {
+                       @Html.Raw(", { align: 'center',field: 'OriScore', width: 120 ,title: '本轮得分'}")
+                    }
+                    @for(var i = 2; i <= maxshowturn; i++)
+                    { @Html.Raw(",{ align: 'center', field: 'Score"+i+"', width: 120, title: '补投"+(i-1)+"' ,templet:'#score"+i+"'}")}
+                    , { align: 'center',field: 'ProjectName',width:'200',  templet: '#projectTpl', title: '项目名称' }
+                    //, { align: 'center',field: 'BuildingCompany', width: 220, title: '建筑单位' }
+                    , { align: 'center',field: 'BuildingType', width: 120, title: '建筑类别' }
+                    , { align: 'center',field: 'DesignCompany', width: 220, title: '设计单位' }
+                    , { align: 'center',field: 'DesignYear', width: 120, title: '设计时间' }
+                    , { width: 120, align: 'center', toolbar: '#btnTpl', fixed: 'right', title: '评审详情' }
+                ]]
+                , done: function (res, curr, count) {
+                    $("a.confirm").closest("tr").addClass("highlight");
+                        if ($("a.confirm").size() > 0) {
+                        $("#addinReviewBtn").show();//有同分的则进行补充评审
+                        }
+                    }
+            });
+            //监听工具条
+            layui.table.on('tool(projectlist)', function (obj) { //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
+                var data = obj.data; //获得当前行数据
+                var layEvent = obj.event; //获得 lay-event 对应的值
+                var tr = obj.tr; //获得当前行 tr 的DOM对象
+                if (layEvent === 'view') { //评审明细
+                    layer.open({
+                        type: 2,
+                        title: '项目名称:'+data.ProjectName,
+                        closeBtn: 1,
+                        area: ['500px', '500px'],
+                        shadeClose: false,
+                        content: "/Show/ProjectReviewDetail?detailid=@Model.ID&projectid=" + data.ID
+                    });
+                }
+            });
+        })
+        function showProject(id) {
+            layer.open({
+                type: 2,
+                title: '项目详情',
+                closeBtn: 1,
+                area: ['850px', '500px'],
+                shadeClose: false,
+                content: "/Show/Project?id=" + id
+            });
+        }
+    </script>
+</body>
+</html>

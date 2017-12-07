@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.30501.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TFA.Vote", "TFA.Vote\TFA.Vote.csproj", "{47E55DB3-F541-46F4-86E9-EA88AFB49E3A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TF.Common", "TF.Common\TF.Common.csproj", "{B29E6053-9AA0-4551-89D2-B5FFB164C93A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{47E55DB3-F541-46F4-86E9-EA88AFB49E3A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{47E55DB3-F541-46F4-86E9-EA88AFB49E3A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{47E55DB3-F541-46F4-86E9-EA88AFB49E3A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{47E55DB3-F541-46F4-86E9-EA88AFB49E3A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B29E6053-9AA0-4551-89D2-B5FFB164C93A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B29E6053-9AA0-4551-89D2-B5FFB164C93A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B29E6053-9AA0-4551-89D2-B5FFB164C93A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B29E6053-9AA0-4551-89D2-B5FFB164C93A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {FEE2AFBC-5467-4435-9087-7607AE86F848}
+	EndGlobalSection
+EndGlobal

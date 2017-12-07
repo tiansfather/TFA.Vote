@@ -1,0 +1,119 @@
+﻿@{
+    ViewBag.Title = "ExpertManager_List";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div id="nav">
+    <span>专家账号管理</span>
+</div>
+<div id="form">
+    <form class="searchForm">
+        <table width="1000" class="formtable minitd" cellpadding="2" cellspacing="2">
+            <tr>
+                <td width="15%" class="tdleft_even"><span class="text">登录账号:</span></td>
+                <td width="25%" class="tdright"><input class="input" type="text" value="" style="width:150px" name="username" id="username"></td>
+                <td width="15%" class="tdleft_even"><span class="text">姓名:</span></td>
+                <td width="25%" class="tdright"><input class="input" type="text" value="" style="width:150px" name="realname" id="realname"></td>
+                <td style="border:0"><input type="button" class="input button" value="查询" style="width:100px" onclick="loadData()" /></td>
+            </tr>
+        </table>
+    </form>
+    <ul style="margin-top:15px;">
+
+        <li ><input type="button" class="input button" value="新建专家账号" style="width:100px" onclick="newexpert()"></li>
+    </ul>
+</div>
+<div  style="margin-top:15px;">
+    <table class="layui-table" lay-data="{height:'full-265', url:'/data/experts/', page:true,id:'expertlist'}" lay-filter="expertlist">
+        <thead>
+            <tr>
+                <th lay-data="{field:'RealName', width:120,sort:true}" >专家姓名</th>
+                <th lay-data="{field:'UserName', width:120,sort:true}">登录帐号</th>
+                <th lay-data="{field:'Enable', width:80,templet:'#enableTpl',sort:true}">状态</th>
+                <th lay-data="{field:'Company', width:200,sort:true}">所属单位</th>
+                <th lay-data="{field:'Memo',width:250}">备注</th>
+                <th lay-data="{width:100, align:'center', toolbar: '#btnTpl'}">操作</th>
+            </tr>
+        </thead>
+    </table>
+    <script type="text/html" id="enableTpl">
+        {{#  if(!d.Enable){ }}
+        <span style="color: red;">无效</span>
+        {{#  } else { }}
+        <span style="color: green;">有效</span>
+        {{#  } }}
+    </script>
+    <script type="text/html" id="btnTpl">
+        <a class="layui-btn layui-btn-mini" lay-event="edit">编辑</a>
+        <a class="layui-btn layui-btn-danger layui-btn-mini" lay-event="del">删除</a>
+    </script>
+</div>
+@section script{
+
+    <script>
+        var table = layui.table;
+            function newexpert() {
+                //弹出框
+                layer.open({
+                    type: 2,
+                    title: '新建专家账号',
+                    closeBtn: 1,
+                    area: ['500px', '400px'],
+                    shadeClose: false,
+                    content: "/Manager/ExpertManager_Add"
+                });
+            }
+
+         function editexpert(id) {
+                //弹出框
+                layer.open({
+                    type: 2,
+                    title: '编辑专家账号',
+                    closeBtn: 1,
+                    area: ['500px', '400px'],
+                    shadeClose: false,
+                    content: "/Manager/ExpertManager_Edit?id=" + id
+                });
+            }
+         function loadData() {
+             var where = $("form.searchForm").serializeObj();
+             table.reload('expertlist', {where:where});
+         }
+         $(function () {
+             
+             //监听工具条
+             table.on('tool(expertlist)', function (obj) { //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
+                 var data = obj.data; //获得当前行数据
+                 var layEvent = obj.event; //获得 lay-event 对应的值
+                 var tr = obj.tr; //获得当前行 tr 的DOM对象
+
+                 if (layEvent === 'detail') { //查看
+                     //do somehing
+                 } else if (layEvent === 'del') { //删除
+                     layer.confirm('真的删除此专家么', function (index) {
+                         TF.ajaxDo("/Manager/ExpertManager_Del?id="+data.ID, TF.ajaxDone);
+                     });
+                 } else if (layEvent === 'edit') { //编辑
+                     //do something
+                     editexpert(data.ID);
+                     //同步更新缓存对应的值
+                     //obj.update({
+                     //    username: '123'
+                     //    , title: 'xxx'
+                     //});
+                 }
+             });
+             table.on('sort(expertlist)', function (obj) { //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
+                 
+
+                 var where = $("form.searchForm").serializeObj();
+                 where["field"] = obj.field;
+                 where["order"] = obj.type;
+                 table.reload('expertlist', {
+                     initSort: obj //记录初始排序，如果不设的话，将无法标记表头的排序状态。 layui 2.1.1 新增参数
+                     , where: where
+                 });
+             });
+         })
+</script>
+    }

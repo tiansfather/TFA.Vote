@@ -1,0 +1,105 @@
+﻿@{
+    ViewBag.Title = "ReviewManager_List";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var awardlist = ViewData["awardlist"] as List<TFA.Vote.Models.Award>;
+}
+
+<div id="nav">
+    <span>评审活动管理</span>
+</div>
+<div id="form">
+    <form class="searchForm">
+        <table width="1000" class="formtable minitd" cellpadding="2" cellspacing="2">
+            <tr>
+                <td width="15%" class="tdleft_even"><span class="text">评审活动名称:</span></td>
+                <td width="25%" class="tdright"><input class="input" type="text" value="" style="width:150px" name="reviewname"></td>
+                <td width="15%" class="tdleft_even"><span class="text">奖项:</span></td>
+                <td width="25%" class="tdright">
+                    <select class="input" style="width:150px" name="awardid">
+                        <option value="">--请选择--</option>
+                        @foreach (var award in awardlist)
+                        {
+                            <option value="@award.ID">@award.AwardName</option>
+                        }
+                    </select>
+                </td>
+                <td style="border:0"><input type="button" class="input button" value="查询" style="width:100px" onclick="loadData()" /></td>
+            </tr>
+        </table>
+    </form>
+    <ul style="margin-top:15px;">
+
+        <li><input type="button" class="input button" value="创建全新评审活动" style="width:180px" onclick="newreview()"></li>
+    </ul>
+</div>
+<div style="margin-top:15px;">
+    <table class="layui-table" lay-data="{height:'full-265', url:'/data/reviews/', page:true,id:'reviewlist'}" lay-filter="reviewlist">
+        <thead>
+            <tr>
+                <th lay-data="{field:'AwardName', width:240}">奖项</th>
+                <th lay-data="{field:'ReviewName', width:200}">评审活动说明</th>
+                <th lay-data="{field:'CurrentRoundTurn', width:120}">当前进展</th>
+                <th lay-data="{field:'ProjectCount', width:120}">参评项目</th>
+                <th lay-data="{field:'ReviewStatus',width:100,templet:'#statusTpl'}">状态</th>
+                <th lay-data="{field:'StartTime',width:140}">开始时间</th>
+                <th lay-data="{width:150, align:'center', toolbar: '#btnTpl',fixed:'right'}">操作</th>
+            </tr>
+        </thead>
+    </table>
+    <script type="text/html" id="statusTpl">
+        {{#  if(d.ReviewStatus==0){ }}
+        <span >未发布</span>
+        {{#  } else if(d.ReviewStatus==1) { }}
+        <span style="color: red;">正在评审</span>
+        {{#  } else if(d.ReviewStatus==2) { }}
+        <span style="color: green;">已结束</span>
+        {{#  } }}
+    </script>
+    <script type="text/html" id="btnTpl">
+        <a class="layui-btn layui-btn-mini" lay-event="detail">查看情况</a>
+        <a class="layui-btn layui-btn-danger layui-btn-mini" lay-event="del">删除</a>
+    </script>
+</div>
+@section script{
+
+    <script>
+        var table = layui.table;
+            function newreview() {
+                location.href = "/Manager/ReviewManager_Add";
+            }
+        
+         function loadData() {
+             var where = $("form.searchForm").serializeObj();
+             table.reload('reviewlist', {where:where});
+         }
+         $(function () {
+
+             //监听工具条
+             table.on('tool(reviewlist)', function (obj) { //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
+                 var data = obj.data; //获得当前行数据
+                 var layEvent = obj.event; //获得 lay-event 对应的值
+                 var tr = obj.tr; //获得当前行 tr 的DOM对象
+
+                 if (layEvent === 'detail') { //查看
+                     location.href = '/Manager/ReviewManager_Summary?id=' + data.ID;
+                 } else if (layEvent === 'del') { //删除
+                     layer.confirm('真的删除此评审活动么', function (index) {
+                         TF.ajaxDo("/Manager/ReviewManager_Del?id="+data.ID, TF.ajaxDone);
+                     });
+                 } else if (layEvent === 'edit') { //编辑
+                 }
+             });
+             table.on('sort(reviewlist)', function (obj) { //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
+
+
+                 var where = $("form.searchForm").serializeObj();
+                 where["field"] = obj.field;
+                 where["order"] = obj.type;
+                 table.reload('reviewlist', {
+                     initSort: obj //记录初始排序，如果不设的话，将无法标记表头的排序状态。 layui 2.1.1 新增参数
+                     , where: where
+                 });
+             });
+         })
+    </script>
+}

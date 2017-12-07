@@ -1,0 +1,62 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <script src="/Resource/JS/jquery-1.7.1.min.js"></script>
+    <script src="/Resource/JS/global.js"></script>
+    <link href="/Resource/CSS/style.css" type="text/css" rel="stylesheet" />
+    <link href="/Resource/layui/css/layui.css" rel="stylesheet" />
+</head>
+<body style="padding:15px;">
+    <div id="form">
+        <form class="searchForm">
+            <table width="700" class="formtable minitd" cellpadding="2" cellspacing="2">
+                <tr>
+                    <td width="15%" class="tdleft_even"><span class="text">登录账号:</span></td>
+                    <td width="25%" class="tdright"><input class="input" type="text" value="" style="width:150px" name="username" id="username"></td>
+                    <td width="15%" class="tdleft_even"><span class="text">姓名:</span></td>
+                    <td width="25%" class="tdright"><input class="input" type="text" value="" style="width:150px" name="realname" id="realname"></td>
+                    <td style="border:0"><input type="button" class="input button" value="查询" style="width:100px" onclick="loadData()" /></td>
+                </tr>
+            </table>
+        </form>
+    </div>
+    <div style="margin-top:15px;">
+        <table class="layui-table" lay-data="{limit:1000,height:'full-165', url:'/data/experts?enable=true&exclude=@(Request.QueryString["exclude"])&limitin=@(Request.QueryString["limitin"])', id:'expertlist'}" lay-filter="expertlist">
+            <thead>
+                <tr>
+                    <th lay-data="{checkbox:true,fixed:'left'}"></th>
+                    <th lay-data="{field:'RealName', width:120}">专家姓名</th>
+                    <th lay-data="{field:'UserName', width:120}">登录帐号</th>
+                    <th lay-data="{field:'Company', width:200}">所属单位</th>
+                    <th lay-data="{field:'Memo',width:250}">备注</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+    <div style="text-align:center">
+        <input type="button" class="input button" value="确定" style="width:100px" onclick="docallback()" />
+    </div>
+    <script src="/Resource/layui/layui.all.js"></script>
+    <script>
+        var table = layui.table;
+        var cb=parent.@Request.QueryString["cb"];
+        function loadData() {
+            var where = $("form.searchForm").serializeObj();
+            table.reload('expertlist', { where: where });
+        }
+
+        function docallback() {
+            var data = table.checkStatus('expertlist').data;
+            cb(data);
+        }
+    </script>
+
+</body>
+</html>
