@@ -5,7 +5,7 @@
     Layout = "~/Views/Shared/_LayoutExpert.cshtml";
     var review = Config.Helper.SingleById<TFA.Vote.Models.Review>(Model.ReviewID);
     var expert = Config.CurrentUser;
-    var projects = Config.Helper.CreateWhere<TFA.Vote.Models.Project>().AddWhereSql("id in(" + Model.SourceProjectIDs + ")").Select();
+    var projects = Config.Helper.CreateWhere<TFA.Vote.Models.Project>().Where(o=>!o.IsDelete).AddWhereSql("id in(" + Model.SourceProjectIDs + ")").Select();
 
     projects.ForEach(o =>
     {
